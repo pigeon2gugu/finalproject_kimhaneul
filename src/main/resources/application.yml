@@ -3,3 +3,7 @@ server:
   servlet:
     encoding:
       force-response: true
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
