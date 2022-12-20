@@ -19,7 +19,7 @@ public class User {
     private int id;
     private String password;
     private Timestamp registeredAt;
-    private UserRole role;
+    private String role;
     @Column(unique = true)
     private String userName;
 

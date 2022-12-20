@@ -12,3 +12,7 @@ spring:
     url: jdbc:mysql://localhost:8080/likelion-db
     username: root
     password: 1234
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update

@@ -2,7 +2,6 @@ package com.example.mutsa_sns.domain.dto;
 
 
 import com.example.mutsa_sns.domain.User;
-import com.example.mutsa_sns.domain.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,11 +18,11 @@ public class UserJoinRequest {
     private String userName;
     private String password;
 
-    public User toEntity(String password, int index, Timestamp time) {
+    public User toEntity(String password, String role, Timestamp time) {
         return User.builder()
                 .userName(this.userName)
                 .password(password)
-                .role(UserRole.values()[index])
+                .role(role)
                 .registeredAt(time)
                 .build();
     }

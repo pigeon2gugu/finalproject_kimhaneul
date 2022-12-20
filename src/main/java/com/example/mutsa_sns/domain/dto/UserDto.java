@@ -1,6 +1,5 @@
 package com.example.mutsa_sns.domain.dto;
 
-import com.example.mutsa_sns.domain.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +14,7 @@ public class UserDto {
     private int id;
     private String userName;
     private String password;
-    private UserRole role;
+    private String role;
 
 
 }
