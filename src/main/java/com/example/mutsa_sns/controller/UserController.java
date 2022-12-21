@@ -23,9 +23,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public UserLoginResponse login(@RequestBody UserLoginRequest req) {
+    public Response<UserLoginResponse> login(@RequestBody UserLoginRequest req) {
         String token = userService.login(req.getUserName(), req.getPassword());
-        return new UserLoginResponse(token);
+        return Response.success(new UserLoginResponse(token));
     }
 
 }
