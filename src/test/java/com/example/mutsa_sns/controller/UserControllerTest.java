@@ -2,6 +2,7 @@ package com.example.mutsa_sns.controller;
 
 import com.example.mutsa_sns.domain.dto.UserDto;
 import com.example.mutsa_sns.domain.dto.UserJoinRequest;
+import com.example.mutsa_sns.domain.dto.UserLoginRequest;
 import com.example.mutsa_sns.exception.AppException;
 import com.example.mutsa_sns.exception.ErrorCode;
 import com.example.mutsa_sns.service.UserService;
@@ -75,6 +76,72 @@ class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isConflict());
     }
+
+    @Test
+    @DisplayName("로그인 성공")
+    @WithMockUser
+
+    void login_success() throws Exception{
+        UserLoginRequest userLoginRequest = UserLoginRequest.builder()
+                .userName("haneul")
+                .password("1234")
+                .build();
+        when(userService.login(any(), any()))
+                .thenReturn("token");
+
+        mockMvc.perform(post("/api/v1/users/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(userLoginRequest)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - userName 없음")
+    @WithMockUser
+
+    void login_fail1() throws Exception {
+
+        UserLoginRequest userLoginRequest = UserLoginRequest.builder()
+                .userName("haneul")
+                .password("1234")
+                .build();
+
+        when(userService.login(any(), any()))
+                .thenThrow(new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+
+        mockMvc.perform(post("/api/v1/users/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(userLoginRequest)))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - password 틀림")
+    @WithMockUser
+
+    void login_fail2() throws Exception {
+
+        UserLoginRequest userLoginRequest = UserLoginRequest.builder()
+                .userName("haneul")
+                .password("1234")
+                .build();
+
+        when(userService.login(any(), any()))
+                .thenThrow(new AppException(ErrorCode.INVALID_PASSWORD, ""));
+
+        mockMvc.perform(post("/api/v1/users/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(userLoginRequest)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
 
 
 
