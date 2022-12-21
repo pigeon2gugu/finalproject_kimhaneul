@@ -1,9 +1,6 @@
 package com.example.mutsa_sns.controller;
 
-import com.example.mutsa_sns.domain.dto.Response;
-import com.example.mutsa_sns.domain.dto.UserDto;
-import com.example.mutsa_sns.domain.dto.UserJoinRequest;
-import com.example.mutsa_sns.domain.dto.UserJoinResponse;
+import com.example.mutsa_sns.domain.dto.*;
 import com.example.mutsa_sns.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.parameters.P;
@@ -23,6 +20,12 @@ public class UserController {
     public Response<UserJoinResponse> join(@RequestBody UserJoinRequest req) {
         UserDto userDto = userService.join(req);
         return Response.success(new UserJoinResponse(userDto.getId(), userDto.getUserName()));
+    }
+
+    @PostMapping("/login")
+    public Response<UserLoginResponse> login(@RequestBody UserLoginRequest req) {
+        String token = userService.login(req.getUserName(), req.getPassword());
+        return Response.success(new UserLoginResponse(token));
     }
 
 }

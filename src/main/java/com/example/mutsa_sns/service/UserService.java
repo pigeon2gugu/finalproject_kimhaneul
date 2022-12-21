@@ -1,12 +1,15 @@
 package com.example.mutsa_sns.service;
 
+
 import com.example.mutsa_sns.domain.User;
 import com.example.mutsa_sns.domain.dto.UserDto;
 import com.example.mutsa_sns.domain.dto.UserJoinRequest;
 import com.example.mutsa_sns.exception.AppException;
 import com.example.mutsa_sns.exception.ErrorCode;
 import com.example.mutsa_sns.repository.UserRepository;
+import com.example.mutsa_sns.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+
+    @Value("${jwt.token.secret}") // 환경변수내 정보 이용
+    private String secretKey;
+
+    private long expireTimeMs = 1000 * 60 * 60; //만료시간 1h
 
     public UserDto join(UserJoinRequest req) {
 
@@ -38,7 +46,7 @@ public class UserService {
         }
 
         Timestamp registeredAt = new Timestamp(System.currentTimeMillis());
-        //한국시간 utc + 9h (timestamp + 32400000)
+        //한국시간 utc + 9h (timestamp + 32400000) 해줘야 하는가
         //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 
         User savedUser = userRepository.save(req.toEntity(encoder.encode(req.getPassword()), role, registeredAt));
@@ -49,4 +57,22 @@ public class UserService {
                 .role(savedUser.getRole())
                 .build();
     }
+
+    public String login(String userName, String password) {
+
+        //userName이 존재하는가
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(()-> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+
+        //password 일치하는가
+        if(!encoder.matches(password, user.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_PASSWORD ,"");
+        }
+        
+        //위의 예외 발생하지 않으면 로그인 성공. token 발행
+
+        return JwtTokenUtil.createToken(userName, secretKey, expireTimeMs);
+
+    }
+
 }
