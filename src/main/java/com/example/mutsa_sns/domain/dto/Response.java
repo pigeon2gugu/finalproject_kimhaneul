@@ -8,11 +8,11 @@ import lombok.Getter;
 @Getter
 public class Response<T> {
 
+    private String resultCode;
     private T result;
-    private T errorResult;
 
-    public static <T> Response<T> error(T errorResult) {
-        return new Response("ERROR", errorResult);
+    public static <T> Response<T> error(T result) {
+        return new Response("ERROR", result);
     }
 
     public static <T> Response<T> success(T result) {
