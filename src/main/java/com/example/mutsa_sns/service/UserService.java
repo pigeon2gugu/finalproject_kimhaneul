@@ -25,7 +25,7 @@ public class UserService {
         //중복 userName시 error
         userRepository.findByUserName(req.getUserName())
                 .ifPresent(user -> {
-                    throw new AppException(ErrorCode.DUPLICATED_USER_NAME, String.format("userName : %s", req.getUserName()));
+                    throw new AppException(ErrorCode.DUPLICATED_USER_NAME, String.format("userName : %s는 이미 있습니다.", req.getUserName()));
                 });
 
         //UserRole index

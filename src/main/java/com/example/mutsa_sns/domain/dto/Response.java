@@ -1,5 +1,6 @@
 package com.example.mutsa_sns.domain.dto;
 
+import com.example.mutsa_sns.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,11 +8,11 @@ import lombok.Getter;
 @Getter
 public class Response<T> {
 
-    private String resultCode;
     private T result;
+    private T errorResult;
 
-    public static Response<Void> error(String resultCode) {
-        return new Response(resultCode, null);
+    public static <T> Response<T> error(T errorResult) {
+        return new Response("ERROR", errorResult);
     }
 
     public static <T> Response<T> success(T result) {

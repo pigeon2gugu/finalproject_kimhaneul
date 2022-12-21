@@ -20,6 +20,7 @@ public class User {
     private String password;
     private Timestamp registeredAt;
     private String role;
+    private Timestamp updatedAt;
     @Column(unique = true)
     private String userName;
 

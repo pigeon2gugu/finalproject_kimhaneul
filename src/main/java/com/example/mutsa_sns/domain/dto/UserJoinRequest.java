@@ -24,6 +24,7 @@ public class UserJoinRequest {
                 .password(password)
                 .role(role)
                 .registeredAt(time)
+                .updatedAt(time)
                 .build();
     }
 }
