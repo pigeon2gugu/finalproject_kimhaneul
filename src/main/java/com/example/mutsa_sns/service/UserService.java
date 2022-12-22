@@ -71,4 +71,8 @@ public class UserService {
 
     }
 
+    public User tokenGetUserByUserName(String userName) {
+        return userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+    }
 }
