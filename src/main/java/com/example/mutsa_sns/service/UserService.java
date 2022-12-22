@@ -45,11 +45,7 @@ public class UserService {
             index = 0;
         }
 
-        Timestamp registeredAt = new Timestamp(System.currentTimeMillis());
-        //한국시간 utc + 9h (timestamp + 32400000) 해줘야 하는가
-        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-
-        User savedUser = userRepository.save(req.toEntity(encoder.encode(req.getPassword()), index, registeredAt));
+        User savedUser = userRepository.save(req.toEntity(encoder.encode(req.getPassword()), index));
 
         return UserDto.builder()
                 .id(savedUser.getId())

@@ -19,13 +19,11 @@ public class UserJoinRequest {
     private String userName;
     private String password;
 
-    public User toEntity(String password, int index, Timestamp time) {
+    public User toEntity(String password, int index) {
         return User.builder()
                 .userName(this.userName)
                 .password(password)
                 .role(UserRole.values()[index])
-                .registeredAt(time)
-                .updatedAt(time)
                 .build();
     }
 }

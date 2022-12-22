@@ -12,16 +12,16 @@ import java.sql.Timestamp;
 @Getter
 @Table(name = "user")
 @Entity
-public class User {
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String password;
-    private Timestamp registeredAt;
     @Enumerated(EnumType.STRING)
     private UserRole role;
-    private Timestamp updatedAt;
     @Column(unique = true)
     private String userName;
 
