@@ -38,18 +38,18 @@ public class UserService {
                 });
 
         //UserRole index
-        String role = "USER";
+        int index = 1;
 
         //db에 유저가 아무도 없을 때, 새로 생성되는 계정을 admin으로
         if (userRepository.count() == 0) {
-            role = "ADMIN";
+            index = 0;
         }
 
         Timestamp registeredAt = new Timestamp(System.currentTimeMillis());
         //한국시간 utc + 9h (timestamp + 32400000) 해줘야 하는가
         //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 
-        User savedUser = userRepository.save(req.toEntity(encoder.encode(req.getPassword()), role, registeredAt));
+        User savedUser = userRepository.save(req.toEntity(encoder.encode(req.getPassword()), index, registeredAt));
 
         return UserDto.builder()
                 .id(savedUser.getId())

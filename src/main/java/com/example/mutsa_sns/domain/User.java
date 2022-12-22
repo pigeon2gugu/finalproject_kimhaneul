@@ -19,7 +19,8 @@ public class User {
     private int id;
     private String password;
     private Timestamp registeredAt;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
     private Timestamp updatedAt;
     @Column(unique = true)
     private String userName;
