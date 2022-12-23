@@ -10,7 +10,12 @@ import com.example.mutsa_sns.repository.PostRepository;
 import com.example.mutsa_sns.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,5 +62,13 @@ public class PostService {
                 .lastModifiedAt(post.getLastModifiedAt())
                 .createdAt(post.getCreatedAt())
                 .build();
+    }
+
+    public Page<PostDto> getPostAll(Pageable pageable) {
+        Page<Post> postPages = postRepository.findAll(pageable);
+        return new PageImpl<>(postPages.stream()
+                .map(Post::toResponse)
+                .collect(Collectors.toList()));
+
     }
 }

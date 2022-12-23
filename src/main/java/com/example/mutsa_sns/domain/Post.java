@@ -1,5 +1,6 @@
 package com.example.mutsa_sns.domain;
 
+import com.example.mutsa_sns.domain.dto.PostDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,4 +26,15 @@ public class Post extends BaseEntity{
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public PostDto toResponse() {
+        return PostDto.builder()
+                .id(this.getId())
+                .userName(this.getUser().getUserName())
+                .title(this.getTitle())
+                .body(this.getBody())
+                .createdAt(this.getCreatedAt())
+                .lastModifiedAt(this.getLastModifiedAt())
+                .build();
+    }
 }
