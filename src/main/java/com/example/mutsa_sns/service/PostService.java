@@ -38,9 +38,24 @@ public class PostService {
         postRepository.save(post);
 
         return PostDto.builder()
+                .id(post.getId())
                 .title(post.getTitle())
                 .body(post.getBody())
                 .userName(post.getUser().getUserName())
+                .build();
+    }
+
+    public PostDto detailPost(Integer id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
+
+        return PostDto.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .body(post.getBody())
+                .userName(post.getUser().getUserName())
+                .lastModifiedAt(post.getLastModifiedAt())
+                .createdAt(post.getCreatedAt())
                 .build();
     }
 }

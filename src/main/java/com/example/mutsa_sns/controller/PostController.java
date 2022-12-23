@@ -8,10 +8,7 @@ import com.example.mutsa_sns.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -27,6 +24,11 @@ public class PostController {
         return Response.success(new PostCreateResponse("포스트 등록 완료", postDto.getId()));
     }
 
+    @GetMapping("/{postId}")
+    public Response<PostDto> getPostDetail(@PathVariable Integer postId) {
+        PostDto postDto = postService.detailPost(postId);
+        return Response.success(postDto);
+    }
 
 
 }
