@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PostCreateResponse {
     private String message;
-    private int id;
+    private int postId;
 }
