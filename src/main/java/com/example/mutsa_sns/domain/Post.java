@@ -12,6 +12,7 @@ import static javax.persistence.FetchType.LAZY;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "post")
 @Entity
 @ToString(callSuper = true)
@@ -37,4 +38,5 @@ public class Post extends BaseEntity{
                 .lastModifiedAt(this.getLastModifiedAt())
                 .build();
     }
+
 }

@@ -79,4 +79,28 @@ public class PostService {
         postRepository.delete(post);
 
     }
+
+    public PostDto modifyPost(Integer postId, String title, String body, String userName) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+
+
+        //userRole이 USER이고, 작성자와 삭제자 불일치시.
+        //ADMIN은 모두 수정 가능.
+        if (user.getRole() == UserRole.USER && !Objects.equals(post.getUser().getUserName(), userName)) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "");
+        }
+
+        post.setTitle(title);
+        post.setBody(body);
+
+        Post savedPost = postRepository.saveAndFlush(post);
+
+        return savedPost.toResponse();
+
+    }
+
 }

@@ -1,9 +1,6 @@
 package com.example.mutsa_sns.controller;
 
-import com.example.mutsa_sns.domain.dto.PostCreateRequest;
-import com.example.mutsa_sns.domain.dto.PostResponse;
-import com.example.mutsa_sns.domain.dto.PostDto;
-import com.example.mutsa_sns.domain.dto.Response;
+import com.example.mutsa_sns.domain.dto.*;
 import com.example.mutsa_sns.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,7 +39,6 @@ public class PostController {
 
     }
 
-
     @DeleteMapping("/{postId}")
     public Response<PostResponse> deletePost(@PathVariable Integer postId, Authentication authentication) {
 
@@ -50,5 +46,13 @@ public class PostController {
         return Response.success(new PostResponse("포스트 삭제 완료", postId));
 
     }
+
+    @PutMapping("/{postId}")
+    public Response<PostResponse> modifyPost(@PathVariable Integer postId, @RequestBody PostModifyRequest req, Authentication authentication) {
+
+        PostDto postDto = postService.modifyPost(postId, req.getTitle(), req.getBody(), authentication.getName());
+        return Response.success(new PostResponse("포스트 수정 완료", postDto.getId()));
+    }
+
 
 }
