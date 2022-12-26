@@ -98,6 +98,10 @@ public class PostServiceTest {
 
         PostDto postDto = postService.detailPost(post.getId());
 
+        //postDto userName == User userName
+        assertEquals(user.getUserName(), postDto.getUserName());
+
+
 
     }
 
