@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .antMatchers(HttpMethod.POST,"/api/**").authenticated() // post는 인가자만 허용
+                .antMatchers(HttpMethod.DELETE,"/api/**").authenticated() // delete는 인가자만 허용
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀

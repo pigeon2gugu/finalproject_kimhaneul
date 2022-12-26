@@ -2,6 +2,7 @@ package com.example.mutsa_sns.service;
 
 import com.example.mutsa_sns.domain.Post;
 import com.example.mutsa_sns.domain.User;
+import com.example.mutsa_sns.domain.UserRole;
 import com.example.mutsa_sns.domain.dto.PostCreateRequest;
 import com.example.mutsa_sns.domain.dto.PostDto;
 import com.example.mutsa_sns.exception.AppException;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +32,7 @@ public class PostService {
         log.info("userName:{}", userName);
 
         User user = userRepository.findByUserName(userName)
-                .orElseThrow(()-> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
 
         log.info("user info:{}", user.getUserName());
 
@@ -57,6 +59,24 @@ public class PostService {
         return new PageImpl<>(postPages.stream()
                 .map(Post::toResponse)
                 .collect(Collectors.toList()));
+
+    }
+
+    public void deletePost(String userName, Integer postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+
+
+        //userRole이 USER이고, 작성자와 삭제자 불일치시.
+        //ADMIN은 모두 제거 가능
+        if (user.getRole() == UserRole.USER && !Objects.equals(post.getUser().getUserName(), userName)) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "");
+        }
+
+        postRepository.delete(post);
 
     }
 }

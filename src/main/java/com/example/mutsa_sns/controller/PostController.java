@@ -1,7 +1,7 @@
 package com.example.mutsa_sns.controller;
 
 import com.example.mutsa_sns.domain.dto.PostCreateRequest;
-import com.example.mutsa_sns.domain.dto.PostCreateResponse;
+import com.example.mutsa_sns.domain.dto.PostResponse;
 import com.example.mutsa_sns.domain.dto.PostDto;
 import com.example.mutsa_sns.domain.dto.Response;
 import com.example.mutsa_sns.service.PostService;
@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +21,10 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public Response<PostCreateResponse> createPost(@RequestBody PostCreateRequest req, Authentication authentication) {
+    public Response<PostResponse> createPost(@RequestBody PostCreateRequest req, Authentication authentication) {
         String userName = authentication.getName();
         PostDto postDto = postService.createPost(req, userName);
-        return Response.success(new PostCreateResponse("포스트 등록 완료", postDto.getId()));
+        return Response.success(new PostResponse("포스트 등록 완료", postDto.getId()));
     }
 
     @GetMapping("/{postId}")
@@ -43,5 +42,13 @@ public class PostController {
 
     }
 
+
+    @DeleteMapping("/{postId}")
+    public Response<PostResponse> deletePost(@PathVariable Integer postId, Authentication authentication) {
+
+        postService.deletePost(authentication.getName(), postId);
+        return Response.success(new PostResponse("포스트 삭제 완료", postId));
+
+    }
 
 }
