@@ -1,7 +1,11 @@
 package com.example.mutsa_sns.controller;
 
+import com.example.mutsa_sns.domain.Post;
 import com.example.mutsa_sns.domain.dto.PostCreateRequest;
 import com.example.mutsa_sns.domain.dto.PostDto;
+import com.example.mutsa_sns.domain.dto.PostModifyRequest;
+import com.example.mutsa_sns.exception.AppException;
+import com.example.mutsa_sns.exception.ErrorCode;
 import com.example.mutsa_sns.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -131,5 +134,101 @@ class PostControllerTest {
         
     }
 
+    @Test
+    @DisplayName("post 수정 성공")
+    @WithMockUser
+    void post_modify_success() throws Exception {
 
+        PostModifyRequest postModifyRequest = PostModifyRequest.builder()
+                .title("title")
+                .body("body")
+                .build();
+
+        PostDto modifiedPost = PostDto.builder()
+                .id(1)
+                .title(postModifyRequest.getTitle())
+                .body(postModifyRequest.getBody())
+                .build();
+
+        when(postService.modifyPost(any(), any(), any(), any())).thenReturn(modifiedPost);
+
+        mockMvc.perform(put("/api/v1/posts/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(postModifyRequest)))
+                .andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+                .andExpect(jsonPath("$.result.message").value("포스트 수정 완료"))
+                .andExpect(jsonPath("$.result.postId").value(modifiedPost.getId()))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("post 수정 실패 - 인증 실패")
+    @WithAnonymousUser
+    void post_modify_fail1() throws Exception {
+
+        PostModifyRequest postModifyRequest = PostModifyRequest.builder()
+                .title("title")
+                .body("body")
+                .build();
+
+        mockMvc.perform(put("/api/v1/posts/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(postModifyRequest)))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("post 수정 실패 - 작성자 불일치")
+    @WithMockUser
+    void post_modify_fail2() throws Exception {
+
+        PostModifyRequest postModifyRequest = PostModifyRequest.builder()
+                .title("title")
+                .body("body")
+                .build();
+
+        when(postService.modifyPost(any(), any(), any(), any()))
+                .thenThrow(new AppException(ErrorCode.INVALID_PERMISSION, ""));
+
+        mockMvc.perform(put("/api/v1/posts/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(postModifyRequest)))
+                .andExpect(status().is(ErrorCode.INVALID_PERMISSION.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.INVALID_PERMISSION.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.INVALID_PERMISSION.name()))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("post 수정 실패 - 데이터 베이스 에러")
+    @WithMockUser
+    void post_modify_fail3() throws Exception {
+
+        PostModifyRequest postModifyRequest = PostModifyRequest.builder()
+                .title("title")
+                .body("body")
+                .build();
+
+        when(postService.modifyPost(any(), any(), any(), any()))
+                .thenThrow(new AppException(ErrorCode.DATABASE_ERROR, ""));
+
+        mockMvc.perform(put("/api/v1/posts/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(postModifyRequest)))
+                .andExpect(status().is(ErrorCode.DATABASE_ERROR.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.DATABASE_ERROR.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.DATABASE_ERROR.name()))
+                .andDo(print());
+    }
 }

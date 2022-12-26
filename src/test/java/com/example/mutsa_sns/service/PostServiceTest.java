@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.security.test.context.support.WithMockUser;
 
 
 import java.util.Optional;
@@ -77,7 +78,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("조회 성공")
-    void success_post_get() {
+    void post_get_success() {
 
         User user = User.builder()
                 .id(1)
@@ -94,15 +95,110 @@ public class PostServiceTest {
                 .build();
 
 
-        given(postRepository.findById(post.getId())).willReturn(Optional.of(post));
+        when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
 
         PostDto postDto = postService.detailPost(post.getId());
 
         //postDto userName == User userName
         assertEquals(user.getUserName(), postDto.getUserName());
 
+    }
 
+    @Test
+    @DisplayName("수정 실패 - 포스트 존재하지 않음")
+    @WithMockUser
+    void post_modify_fail1() {
 
+        User user = User.builder()
+                .id(1)
+                .userName("userName")
+                .password("password")
+                .role(UserRole.USER)
+                .build();
+
+        Post post = Post.builder()
+                .id(1)
+                .user(user)
+                .title("title")
+                .body("body")
+                .build();
+
+        when(postRepository.findById(post.getId())).thenReturn(Optional.empty());
+
+        AppException exception = assertThrows(AppException.class,
+                ()-> {
+                    postService.modifyPost(post.getId(), post.getTitle(), post.getBody(), user.getUserName());
+                });
+
+        Assertions.assertEquals("POST_NOT_FOUND", exception.getErrorCode().name());
+    }
+
+    @Test
+    @DisplayName("수정 실패 - 작성자!=유저")
+    @WithMockUser
+    void post_modify_fail2() {
+        //유저
+        User user = User.builder()
+                .id(1)
+                .userName("userName")
+                .password("password")
+                .role(UserRole.USER)
+                .build();
+
+        //작성자
+        User postCreator = User.builder()
+                .id(2)
+                .userName("userName2")
+                .password("password2")
+                .role(UserRole.USER)
+                .build();
+
+        Post post = Post.builder()
+                .id(1)
+                .user(postCreator)
+                .title("title")
+                .body("body")
+                .build();
+
+        when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
+        when(userRepository.findByUserName(user.getUserName())).thenReturn(Optional.of(user));
+
+        AppException exception = assertThrows(AppException.class,
+                ()-> {
+                    postService.modifyPost(post.getId(), post.getTitle(), post.getBody(), user.getUserName());
+                });
+
+        Assertions.assertEquals("INVALID_PERMISSION", exception.getErrorCode().name());
+    }
+
+    @Test
+    @DisplayName("수정 실패 - 유저 존재하지 않음")
+    @WithMockUser
+    void post_modify_fail3() {
+
+        User user = User.builder()
+                .id(1)
+                .userName("userName")
+                .password("password")
+                .role(UserRole.USER)
+                .build();
+
+        Post post = Post.builder()
+                .id(1)
+                .user(user)
+                .title("title")
+                .body("body")
+                .build();
+
+        when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
+        when(userRepository.findByUserName(user.getUserName())).thenReturn(Optional.empty());
+
+        AppException exception = assertThrows(AppException.class,
+                ()-> {
+                    postService.modifyPost(post.getId(), post.getTitle(), post.getBody(), user.getUserName());
+                });
+
+        Assertions.assertEquals("NOT_FOUNDED_USER_NAME", exception.getErrorCode().name());
     }
 
 }
