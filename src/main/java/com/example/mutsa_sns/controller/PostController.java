@@ -51,7 +51,7 @@ public class PostController {
     public Response<PostResponse> modifyPost(@PathVariable Integer postId, @RequestBody PostModifyRequest req, Authentication authentication) {
 
         PostDto postDto = postService.modifyPost(postId, req.getTitle(), req.getBody(), authentication.getName());
-        return Response.success(new PostResponse("포스트 수정 완료", postDto.getId()));
+        return Response.success(new PostResponse("포스트 수정 완료", postId));
     }
 
 
