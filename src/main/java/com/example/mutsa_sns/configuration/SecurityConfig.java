@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST,"/api/**").authenticated() // post는 인가자만 허용
                 .antMatchers(HttpMethod.DELETE,"/api/**").authenticated() // delete는 인가자만 허용
                 .antMatchers(HttpMethod.PUT,"/api/**").authenticated() // put는 인가자만 허용 (글 수정)
+                .antMatchers("/api/v1/users/**/role/change").authenticated() // role 수정
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀

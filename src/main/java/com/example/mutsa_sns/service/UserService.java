@@ -1,7 +1,9 @@
 package com.example.mutsa_sns.service;
 
 
+import com.example.mutsa_sns.domain.Post;
 import com.example.mutsa_sns.domain.User;
+import com.example.mutsa_sns.domain.UserRole;
 import com.example.mutsa_sns.domain.dto.UserDto;
 import com.example.mutsa_sns.domain.dto.UserJoinRequest;
 import com.example.mutsa_sns.exception.AppException;
@@ -10,11 +12,14 @@ import com.example.mutsa_sns.repository.UserRepository;
 import com.example.mutsa_sns.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
@@ -74,5 +79,33 @@ public class UserService {
     public User tokenGetUserByUserName(String userName) {
         return userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+    }
+
+    public UserDto changeUserRole(Integer userId, String adminUserName) {
+
+        //admin userName이 존재하는가
+        User adminUser = userRepository.findById(userId)
+                .orElseThrow(()-> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+
+        //adminUser의 유저 권한이 ADMIN이 아니면 exception
+        if(adminUser.getRole() == UserRole.ADMIN) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION ,"");
+        }
+
+        //권한 바꿀 user의 userName이 존재하는가
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+
+        //admin 권한 부여
+        user.setRole(UserRole.ADMIN);
+
+        User savedUser = userRepository.saveAndFlush(user);
+
+        return UserDto.builder()
+                .id(savedUser.getId())
+                .userName(savedUser.getUserName())
+                .role(savedUser.getRole())
+                .build();
+
     }
 }

@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "user")
 @Entity
 @ToString(callSuper = true)
