@@ -1,14 +1,14 @@
 <div align=center>
  <h2>MutsaSNS</h2>  
 </div>
----
-##:ocean: 프로젝트 소개
+
+## :ocean: 프로젝트 소개
 **MutsaSNS** : Mutsa-SNS로, 회원가입, 로그인, 글쓰기, 댓글, 좋아요, 알림 기능을 갖고 있는 SNS  
 
-##:milky_way: 개발 기간
+## :milky_way: 개발 기간
 + 2022-12-19 ~  
 
-##:globe_with_meridians: 개발 환경
+## :globe_with_meridians: 개발 환경
 + 에디터 : Intellij Ultimate
 + 개발 툴 : SpringBoot 2.7.5
 + 자바 : JAVA 11
@@ -17,7 +17,7 @@
 + 배포 : Docker
 + 데이터베이스 : MySql 8.0
 
-##:dolphin: Swagger
+## :dolphin: Swagger
 http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
 
 ## :blue_book: EndPoint
@@ -48,20 +48,20 @@ http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
         Delete /api/v1/posts  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts  
 
-##:closed_book: 체크리스트
+## :closed_book: 체크리스트
 + 인증/인가 필터 구현 (JWT token filter)
 + Swagger 사용
 + AWS EC2에 Docker 배포
 + Gitlab CI & Crontab CD 을 통한 AWS 배포 자동화
 + 주요 기능에 대한 Test Code 작성
 
-##:ledger: 1주차 미션 요약
+## :ledger: 1주차 미션 요약
 tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/%EB%A9%8B%EC%82%AC%20%EA%B0%9C%EC%9D%B8%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%28mutsa-SNS%29?page=2  
 
 **[접근 방법]**
-    + JWT token filter를 이용하여 권한이 없는 사용자가 접근하였을 때 차단하였으며, 그 때 Response로 exception 메세지를 출력하도록 하였다. (https://celdan.tistory.com/11)
-    + CI/CD 를 통해 main branch에 push 하였을 때 AWS에 자동적으로 배포되도록 하였다. (https://celdan.tistory.com/4)
-    + 각각의 기능에서 성공하는 경우와 exception이 발생하는 경우에 대한 Test Code를 작성하였다. Controller와 Service에 대한 Test Code 모두 작성하였다. (https://celdan.tistory.com/6) (https://celdan.tistory.com/14) (https://celdan.tistory.com/16)
+    + JWT token filter를 이용하여 권한이 없는 사용자가 접근하였을 때 차단하였으며, 그 때 Response로 exception 메세지를 출력하도록 하였다. (https://celdan.tistory.com/11)  
+    + CI/CD 를 통해 main branch에 push 하였을 때 AWS에 자동적으로 배포되도록 하였다. (https://celdan.tistory.com/4)  
+    + 각각의 기능에서 성공하는 경우와 exception이 발생하는 경우에 대한 Test Code를 작성하였다. Controller와 Service에 대한 Test Code 모두 작성하였다. (https://celdan.tistory.com/6) (https://celdan.tistory.com/14) (https://celdan.tistory.com/16)  
 
 **[특이사항]**
     + JWT token filter에서 exception 처리 하는 과정에 어려움을 많이 겪었다. 이 exception처리에 대해서는 보다 공부하여 refactoring이 필요 할 듯 하다.
@@ -72,7 +72,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
 
 ##:gem: 주요 기능
 + **User**
-    - **회원 가입**
+    - **회원 가입**  
         userName, password 입력  
         UserController.join  
         UserService.join  
@@ -97,7 +97,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         }
         ```
 
-    - **로그인**
+    - **로그인**  
         userName, password 입력  
         JWT token 발행  
         UserCotnroller.login  
@@ -131,7 +131,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         }
         ```
 
-    - **ADMIN 역할 부여**
+    - **ADMIN 역할 부여**  
         userRole.ADMIN 유저만 가능  
         UserController.roleChange  
         UserService.changeUserRole  
@@ -166,7 +166,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         ```
 
 + **Post**
-    - **게시글 조회 (전체)**
+    - **게시글 조회 (전체)**  
         전체 유저 가능  
         한 페이지에 20개의 게시글  
         작성 시간 기준 최신글 순서로 정렬  
@@ -205,7 +205,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
             }
         }
         ```
-    - **게시글 조회 (단건)**
+    - **게시글 조회 (단건)**  
         전체 유저 가능  
         해당 postId의 정보 출력  
         PostController.getPostDetail  
@@ -244,7 +244,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         }
         ```
 
-    - **게시글 작성**
+    - **게시글 작성**  
         로그인 유저만 가능  
         PostController.createPost  
         PostService.createPost  
@@ -286,7 +286,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
             }
         }
         ```
-    - **게시글 수정**
+    - **게시글 수정**  
         로그인 유저만 가능  
         수정 글 작성 유저 또는 ADMIN 유저만 가능  
         PostController.modifyPost  
@@ -348,7 +348,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         }
         ```
 
-    - **게시글 삭제**
+    - **게시글 삭제**  
         로그인 유저만 가능  
         수정 글 작성 유저 또는 ADMIN 유저만 가능  
         PostController.deletePost  
