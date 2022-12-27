@@ -54,13 +54,13 @@ class PostControllerTest {
     @Test
     @DisplayName("포스트 작성 성공")
     @WithMockUser
-    void post_success() throws Exception{
+    void post_success() throws Exception {
         PostCreateRequest postCreateRequest = PostCreateRequest.builder()
                 .title("title")
                 .body("body")
                 .build();
 
-        when(postService.createPost(any(),any())).thenReturn(mock(PostDto.class));
+        when(postService.createPost(any(), any())).thenReturn(mock(PostDto.class));
 
         mockMvc.perform(post("/api/v1/posts")
                         .with(csrf())
@@ -74,7 +74,7 @@ class PostControllerTest {
     @Test
     @DisplayName("포스트 작성 실패 - 로그인 하지 않은 상태(토큰 x)")
     @WithAnonymousUser
-    void post_fail() throws Exception{
+    void post_fail() throws Exception {
 
         PostCreateRequest postCreateRequest = PostCreateRequest.builder()
                 .title("title")
@@ -120,7 +120,7 @@ class PostControllerTest {
     @DisplayName("최신글 정렬 - pageable test")
     @WithMockUser
     void post_all_success() throws Exception {
-        
+
         mockMvc.perform(get("/api/v1/posts")
                         .param("sort", "createdAt,desc"))
                 .andExpect(status().isOk())
@@ -131,7 +131,7 @@ class PostControllerTest {
         PageRequest pageable = (PageRequest) pageableCaptor.getValue();
 
         assertEquals(Sort.by(DESC, "createdAt"), pageable.getSort());
-        
+
     }
 
     @Test
@@ -231,4 +231,63 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.DATABASE_ERROR.name()))
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("post 삭제 성공")
+    @WithMockUser
+    void post_delete_success() throws Exception {
+
+        mockMvc.perform(delete("/api/v1/posts/1")
+                        .with(csrf()))
+                .andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+                .andExpect(jsonPath("$.result.message").value("포스트 삭제 완료"))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("포스트 삭제 실패 - 인증 실패")
+    @WithAnonymousUser
+    void post_delete_fail1() throws Exception {
+
+        mockMvc.perform(delete("/api/v1/posts/1")
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("포스트 삭제 실패 - 작성자 불일치")
+    @WithMockUser
+    void post_delete_fail2() throws Exception {
+
+        doThrow(new AppException(ErrorCode.INVALID_PERMISSION, "")).when(postService).deletePost(any(),any());
+
+        mockMvc.perform(delete("/api/v1/posts/1")
+                        .with(csrf()))
+                .andExpect(status().is(ErrorCode.INVALID_PERMISSION.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.INVALID_PERMISSION.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.INVALID_PERMISSION.name()))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("포스트 삭제 실패 - 데이터베이스 에러")
+    @WithMockUser
+    void post_delete_fail3() throws Exception {
+
+        doThrow(new AppException(ErrorCode.DATABASE_ERROR, "")).when(postService).deletePost(any(),any());
+
+        mockMvc.perform(delete("/api/v1/posts/1")
+                        .with(csrf()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.DATABASE_ERROR.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.DATABASE_ERROR.name()))
+                .andDo(print());
+    }
+
 }

@@ -201,4 +201,105 @@ public class PostServiceTest {
         Assertions.assertEquals("NOT_FOUNDED_USER_NAME", exception.getErrorCode().name());
     }
 
+    @Test
+    @DisplayName("삭제 실패 - 유저 존재하지 않음")
+    @WithMockUser
+    void post_delete_fail1() {
+
+        User user = User.builder()
+                .id(1)
+                .userName("userName")
+                .password("password")
+                .role(UserRole.USER)
+                .build();
+
+        Post post = Post.builder()
+                .id(1)
+                .user(user)
+                .title("title")
+                .body("body")
+                .build();
+
+        when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
+        when(userRepository.findByUserName(user.getUserName())).thenReturn(Optional.empty());
+
+        AppException exception = assertThrows(AppException.class,
+                ()-> {
+                    postService.deletePost(user.getUserName(), post.getId());
+                });
+
+        Assertions.assertEquals("NOT_FOUNDED_USER_NAME", exception.getErrorCode().name());
+
+    }
+
+    @Test
+    @DisplayName("삭제 실패 - 포스트 존재하지 않음")
+    @WithMockUser
+    void post_delete_fail2() {
+
+        User user = User.builder()
+                .id(1)
+                .userName("userName")
+                .password("password")
+                .role(UserRole.USER)
+                .build();
+
+        Post post = Post.builder()
+                .id(1)
+                .user(user)
+                .title("title")
+                .body("body")
+                .build();
+
+        when(postRepository.findById(post.getId())).thenReturn(Optional.empty());
+
+        AppException exception = assertThrows(AppException.class,
+                ()-> {
+                    postService.deletePost(user.getUserName(), post.getId());
+                });
+
+        Assertions.assertEquals("POST_NOT_FOUND", exception.getErrorCode().name());
+
+    }
+
+    @Test
+    @DisplayName("삭제 실패 - 작성자!=유저")
+    @WithMockUser
+    void post_delete_fail3() {
+
+        //유저
+        User user = User.builder()
+                .id(1)
+                .userName("userName")
+                .password("password")
+                .role(UserRole.USER)
+                .build();
+
+        //작성자
+        User postCreator = User.builder()
+                .id(2)
+                .userName("userName2")
+                .password("password2")
+                .role(UserRole.USER)
+                .build();
+
+        Post post = Post.builder()
+                .id(1)
+                .user(postCreator)
+                .title("title")
+                .body("body")
+                .build();
+
+        when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
+        when(userRepository.findByUserName(user.getUserName())).thenReturn(Optional.of(user));
+
+        AppException exception = assertThrows(AppException.class,
+                ()-> {
+                    postService.deletePost(user.getUserName(), post.getId());
+                });
+
+        Assertions.assertEquals("INVALID_PERMISSION", exception.getErrorCode().name());
+
+    }
+
 }
