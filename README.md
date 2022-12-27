@@ -245,6 +245,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         ```
 
     - **게시글 작성**  
+        title, body 입력  
         로그인 유저만 가능  
         PostController.createPost  
         PostService.createPost  
@@ -287,6 +288,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         }
         ```
     - **게시글 수정**  
+        title, body 입력  
         로그인 유저만 가능  
         수정 글 작성 유저 또는 ADMIN 유저만 가능  
         PostController.modifyPost  
