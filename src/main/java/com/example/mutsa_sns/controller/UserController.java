@@ -35,7 +35,7 @@ public class UserController {
     public Response<UserRoleChangeResponse> roleChange(@PathVariable Integer userId, Authentication authentication) {
         String adminUserName = authentication.getName();
         UserDto userDto = userService.changeUserRole(userId, adminUserName);
-        return Response.success(new UserRoleChangeResponse("ADMIN 부여 완료", userId));
+        return Response.success(new UserRoleChangeResponse("ADMIN 부여 완료", userDto.getId()));
     }
 
 }
