@@ -1,6 +1,5 @@
 package com.example.mutsa_sns.controller;
 
-import com.example.mutsa_sns.domain.Post;
 import com.example.mutsa_sns.domain.dto.PostCreateRequest;
 import com.example.mutsa_sns.domain.dto.PostDto;
 import com.example.mutsa_sns.domain.dto.PostModifyRequest;
@@ -11,25 +10,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -55,19 +44,29 @@ class PostControllerTest {
     @DisplayName("포스트 작성 성공")
     @WithMockUser
     void post_success() throws Exception {
+
         PostCreateRequest postCreateRequest = PostCreateRequest.builder()
                 .title("title")
                 .body("body")
                 .build();
 
-        when(postService.createPost(any(), any())).thenReturn(mock(PostDto.class));
+        PostDto createdPost = PostDto.builder()
+                .id(1)
+                .title(postCreateRequest.getTitle())
+                .body(postCreateRequest.getBody())
+                .build();
+
+        when(postService.createPost(any(), any())).thenReturn(createdPost);
 
         mockMvc.perform(post("/api/v1/posts")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(postCreateRequest)))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+                .andExpect(jsonPath("$.result.message").value("포스트 등록 완료"))
+                .andExpect(jsonPath("$.result.postId").value(createdPost.getId()))
+                .andDo(print());
 
     }
 

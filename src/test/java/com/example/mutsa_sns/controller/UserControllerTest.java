@@ -18,11 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
@@ -46,14 +46,21 @@ class UserControllerTest {
                 .password("1234")
                 .build();
 
-        when(userService.join(any())).thenReturn(mock(UserDto.class));
+        UserDto joinedUser = UserDto.builder()
+                .id(1)
+                .userName(userJoinRequest.getUserName())
+                .build();
+
+        when(userService.join(any())).thenReturn(joinedUser);
 
         mockMvc.perform(post("/api/v1/users/join")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(userJoinRequest)))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+                .andExpect(jsonPath("$.result.userName").value(userJoinRequest.getUserName())) //입력한 userName과 출력되는 userName이 같은지
+                .andDo(print());
 
     }
 
@@ -61,6 +68,7 @@ class UserControllerTest {
     @DisplayName("회원가입 실패 - userName 중복")
     @WithMockUser
     void join_fail() throws Exception{
+
         UserJoinRequest userJoinRequest = UserJoinRequest.builder()
                 .userName("haneul")
                 .password("1234")
@@ -73,8 +81,8 @@ class UserControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(userJoinRequest)))
-                .andDo(print())
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andDo(print());
     }
 
     @Test
@@ -82,10 +90,12 @@ class UserControllerTest {
     @WithMockUser
 
     void login_success() throws Exception{
+
         UserLoginRequest userLoginRequest = UserLoginRequest.builder()
                 .userName("haneul")
                 .password("1234")
                 .build();
+
         when(userService.login(any(), any()))
                 .thenReturn("token");
 
@@ -93,8 +103,9 @@ class UserControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(userLoginRequest)))
-                .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
+
     }
 
     @Test
@@ -115,8 +126,8 @@ class UserControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(userLoginRequest)))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(print());
     }
 
     @Test
@@ -137,8 +148,8 @@ class UserControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(userLoginRequest)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
 
     }
 

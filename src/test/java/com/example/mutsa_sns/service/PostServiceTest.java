@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 public class PostServiceTest {
@@ -40,16 +39,27 @@ public class PostServiceTest {
     @DisplayName("포스트 작성 성공")
     void post_success() {
 
-        Post mockPostEntity = mock(Post.class);
-        User mockUserEntity = mock(User.class);
+        User user = User.builder()
+                .id(1)
+                .userName("userName")
+                .password("password")
+                .role(UserRole.USER)
+                .build();
 
-        when(userRepository.findByUserName(mockUserEntity.getUserName()))
-                .thenReturn(Optional.of(mockUserEntity));
+        Post post = Post.builder()
+                .id(1)
+                .user(user)
+                .title("title")
+                .body("body")
+                .build();
+
+        when(userRepository.findByUserName(user.getUserName()))
+                .thenReturn(Optional.of(user));
 
         when(postRepository.save(any()))
-                .thenReturn(mockPostEntity);
+                .thenReturn(post);
 
-        Assertions.assertDoesNotThrow(() -> postService.createPost(new PostCreateRequest(mockPostEntity.getTitle(), mockPostEntity.getBody()), mockUserEntity.getUserName()));
+        Assertions.assertDoesNotThrow(() -> postService.createPost(new PostCreateRequest(post.getTitle(), post.getBody()), user.getUserName()));
 
     }
 
@@ -57,19 +67,30 @@ public class PostServiceTest {
     @DisplayName("포스트 작성 실패 - 유저가 존재하지 않을 때")
     void post_fail() {
 
-        Post mockPostEntity = mock(Post.class);
-        User mockUserEntity = mock(User.class);
+        User user = User.builder()
+                .id(1)
+                .userName("userName")
+                .password("password")
+                .role(UserRole.USER)
+                .build();
 
-        when(userRepository.findByUserName(mockUserEntity.getUserName()))
+        Post post = Post.builder()
+                .id(1)
+                .user(user)
+                .title("title")
+                .body("body")
+                .build();
+
+        when(userRepository.findByUserName(user.getUserName()))
                 .thenReturn(Optional.empty());
 
         when(postRepository.save(any()))
-                .thenReturn(mockPostEntity);
+                .thenReturn(post);
 
 
         AppException exception = assertThrows(AppException.class,
                 ()-> {
-                    postService.createPost(new PostCreateRequest(mockPostEntity.getTitle(), mockPostEntity.getBody()), mockUserEntity.getUserName());
+                    postService.createPost(new PostCreateRequest(post.getTitle(), post.getBody()), user.getUserName());
                 });
 
         Assertions.assertEquals("NOT_FOUNDED_USER_NAME", exception.getErrorCode().name());
