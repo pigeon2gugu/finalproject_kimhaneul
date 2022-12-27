@@ -11,6 +11,7 @@ import com.example.mutsa_sns.exception.ErrorCode;
 import com.example.mutsa_sns.repository.UserRepository;
 import com.example.mutsa_sns.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,6 +24,7 @@ import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -84,11 +86,11 @@ public class UserService {
     public UserDto changeUserRole(Integer userId, String adminUserName) {
 
         //admin userName이 존재하는가
-        User adminUser = userRepository.findById(userId)
+        User adminUser = userRepository.findByUserName(adminUserName)
                 .orElseThrow(()-> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
 
         //adminUser의 유저 권한이 ADMIN이 아니면 exception
-        if(adminUser.getRole() == UserRole.ADMIN) {
+        if(adminUser.getRole() != UserRole.ADMIN) {
             throw new AppException(ErrorCode.INVALID_PERMISSION ,"");
         }
 
