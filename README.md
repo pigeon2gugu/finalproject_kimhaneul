@@ -59,18 +59,18 @@ http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
 tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/%EB%A9%8B%EC%82%AC%20%EA%B0%9C%EC%9D%B8%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%28mutsa-SNS%29?page=2  
 
 **[접근 방법]**
-    + JWT token filter를 이용하여 권한이 없는 사용자가 접근하였을 때 차단하였으며, 그 때 Response로 exception 메세지를 출력하도록 하였다. (https://celdan.tistory.com/11)  
-    + CI/CD 를 통해 main branch에 push 하였을 때 AWS에 자동적으로 배포되도록 하였다. (https://celdan.tistory.com/4)  
-    + 각각의 기능에서 성공하는 경우와 exception이 발생하는 경우에 대한 Test Code를 작성하였다. Controller와 Service에 대한 Test Code 모두 작성하였다. (https://celdan.tistory.com/6) (https://celdan.tistory.com/14) (https://celdan.tistory.com/16)  
++ JWT token filter를 이용하여 권한이 없는 사용자가 접근하였을 때 차단하였으며, 그 때 Response로 exception 메세지를 출력하도록 하였다. (https://celdan.tistory.com/11)  
++ CI/CD 를 통해 main branch에 push 하였을 때 AWS에 자동적으로 배포되도록 하였다. (https://celdan.tistory.com/4)  
++ 각각의 기능에서 성공하는 경우와 exception이 발생하는 경우에 대한 Test Code를 작성하였다. Controller와 Service에 대한 Test Code 모두 작성하였다. (https://celdan.tistory.com/6) (https://celdan.tistory.com/14) (https://celdan.tistory.com/16)  
 
 **[특이사항]**
-    + JWT token filter에서 exception 처리 하는 과정에 어려움을 많이 겪었다. 이 exception처리에 대해서는 보다 공부하여 refactoring이 필요 할 듯 하다.
-    + CI/CD 과정에서도 많은 시행착오가 발생하였다. repository name에 대문자를 쓰면 안되었고, root directory 안에 새로운 repository를 생성하였을 때, 오류가 발생하였다.
-    + deploy file 생성시, image에 대한 제거를 하지 않아 계속하여 쌓였다. image tag가 none인 image들을 image pull할 때 실행하게 하였다. 추후 수정이 필요 할 수 있다.
-    + test code 역시 초반에 감을 잡는데 많은 시행착오가 발생하였다. controller와 service의 test의 차이점을 이해하고, 의존성에 대한 고민을 해보는 시간이었다.
-    + 리펙토링 시, 불필요한 코드나 로직들을 정리하고 싶으며 변수명이나 method 명에 통일성을 주어야 될 듯 하다.
++ JWT token filter에서 exception 처리 하는 과정에 어려움을 많이 겪었다. 이 exception처리에 대해서는 보다 공부하여 refactoring이 필요 할 듯 하다.
++ CI/CD 과정에서도 많은 시행착오가 발생하였다. repository name에 대문자를 쓰면 안되었고, root directory 안에 새로운 repository를 생성하였을 때, 오류가 발생하였다.
++ deploy file 생성시, image에 대한 제거를 하지 않아 계속하여 쌓였다. image tag가 none인 image들을 image pull할 때 실행하게 하였다. 추후 수정이 필요 할 수 있다.
++ test code 역시 초반에 감을 잡는데 많은 시행착오가 발생하였다. controller와 service의 test의 차이점을 이해하고, 의존성에 대한 고민을 해보는 시간이었다.
++ 리펙토링 시, 불필요한 코드나 로직들을 정리하고 싶으며 변수명이나 method 명에 통일성을 주어야 될 듯 하다.
 
-##:gem: 주요 기능
+## :gem: 주요 기능
 + **User**
     - **회원 가입**  
         userName, password 입력  
