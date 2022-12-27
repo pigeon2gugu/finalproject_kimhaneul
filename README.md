@@ -170,8 +170,8 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         전체 유저 가능  
         한 페이지에 20개의 게시글  
         작성 시간 기준 최신글 순서로 정렬  
-        PostController.getPost
-        PostService.getPostAll
+        PostController.getPost  
+        PostService.getPostAll  
         Response  
         ```java
         //성공 시
