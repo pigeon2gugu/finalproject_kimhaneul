@@ -29,7 +29,7 @@ http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
         Post /api/v1/users/login  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/users/login  
     - **ADMIN 역할 부여**  
-        Get /api/v1/users/{userId}/role/change
+        Get /api/v1/users/{userId}/role/change  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/users/2/role/change  
 + **Post**
     - **게시글 조회 (전체)**  
