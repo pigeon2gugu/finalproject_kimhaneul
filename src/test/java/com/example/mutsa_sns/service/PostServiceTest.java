@@ -13,8 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.security.test.context.support.WithMockUser;
-
 
 import java.util.Optional;
 
@@ -29,29 +27,34 @@ public class PostServiceTest {
     PostRepository postRepository = mock(PostRepository.class);
     UserRepository userRepository = Mockito.mock(UserRepository.class);
 
+    User user;
+    Post post;
+
     @BeforeEach
     void setUp() {
         postService = new PostService(postRepository, userRepository);
 
-    }
-
-    @Test
-    @DisplayName("포스트 작성 성공")
-    void post_success() {
-
-        User user = User.builder()
+        user = User.builder()
                 .id(1)
                 .userName("userName")
                 .password("password")
                 .role(UserRole.USER)
                 .build();
 
-        Post post = Post.builder()
+        post = Post.builder()
                 .id(1)
                 .user(user)
                 .title("title")
                 .body("body")
                 .build();
+
+
+
+    }
+
+    @Test
+    @DisplayName("포스트 작성 성공")
+    void post_success() {
 
         when(userRepository.findByUserName(user.getUserName()))
                 .thenReturn(Optional.of(user));
@@ -66,20 +69,6 @@ public class PostServiceTest {
     @Test
     @DisplayName("포스트 작성 실패 - 유저가 존재하지 않을 때")
     void post_fail() {
-
-        User user = User.builder()
-                .id(1)
-                .userName("userName")
-                .password("password")
-                .role(UserRole.USER)
-                .build();
-
-        Post post = Post.builder()
-                .id(1)
-                .user(user)
-                .title("title")
-                .body("body")
-                .build();
 
         when(userRepository.findByUserName(user.getUserName()))
                 .thenReturn(Optional.empty());
@@ -101,21 +90,6 @@ public class PostServiceTest {
     @DisplayName("조회 성공")
     void post_get_success() {
 
-        User user = User.builder()
-                .id(1)
-                .userName("userName")
-                .password("password")
-                .role(UserRole.USER)
-                .build();
-
-        Post post = Post.builder()
-                .id(1)
-                .user(user)
-                .title("title")
-                .body("body")
-                .build();
-
-
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
 
         PostDto postDto = postService.detailPost(post.getId());
@@ -127,22 +101,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("수정 실패 - 포스트 존재하지 않음")
-    @WithMockUser
     void post_modify_fail1() {
-
-        User user = User.builder()
-                .id(1)
-                .userName("userName")
-                .password("password")
-                .role(UserRole.USER)
-                .build();
-
-        Post post = Post.builder()
-                .id(1)
-                .user(user)
-                .title("title")
-                .body("body")
-                .build();
 
         when(postRepository.findById(post.getId())).thenReturn(Optional.empty());
 
@@ -156,15 +115,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("수정 실패 - 작성자!=유저")
-    @WithMockUser
     void post_modify_fail2() {
-        //유저
-        User user = User.builder()
-                .id(1)
-                .userName("userName")
-                .password("password")
-                .role(UserRole.USER)
-                .build();
 
         //작성자
         User postCreator = User.builder()
@@ -174,19 +125,13 @@ public class PostServiceTest {
                 .role(UserRole.USER)
                 .build();
 
-        Post post = Post.builder()
-                .id(1)
-                .user(postCreator)
-                .title("title")
-                .body("body")
-                .build();
-
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
-        when(userRepository.findByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(userRepository.findByUserName(postCreator.getUserName())).thenReturn(Optional.of(postCreator));
+
 
         AppException exception = assertThrows(AppException.class,
                 ()-> {
-                    postService.modifyPost(post.getId(), post.getTitle(), post.getBody(), user.getUserName());
+                    postService.modifyPost(post.getId(), post.getTitle(), post.getBody(), postCreator.getUserName());
                 });
 
         Assertions.assertEquals("INVALID_PERMISSION", exception.getErrorCode().name());
@@ -194,22 +139,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("수정 실패 - 유저 존재하지 않음")
-    @WithMockUser
     void post_modify_fail3() {
-
-        User user = User.builder()
-                .id(1)
-                .userName("userName")
-                .password("password")
-                .role(UserRole.USER)
-                .build();
-
-        Post post = Post.builder()
-                .id(1)
-                .user(user)
-                .title("title")
-                .body("body")
-                .build();
 
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
         when(userRepository.findByUserName(user.getUserName())).thenReturn(Optional.empty());
@@ -224,22 +154,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("삭제 실패 - 유저 존재하지 않음")
-    @WithMockUser
     void post_delete_fail1() {
-
-        User user = User.builder()
-                .id(1)
-                .userName("userName")
-                .password("password")
-                .role(UserRole.USER)
-                .build();
-
-        Post post = Post.builder()
-                .id(1)
-                .user(user)
-                .title("title")
-                .body("body")
-                .build();
 
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
         when(userRepository.findByUserName(user.getUserName())).thenReturn(Optional.empty());
@@ -255,22 +170,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("삭제 실패 - 포스트 존재하지 않음")
-    @WithMockUser
     void post_delete_fail2() {
-
-        User user = User.builder()
-                .id(1)
-                .userName("userName")
-                .password("password")
-                .role(UserRole.USER)
-                .build();
-
-        Post post = Post.builder()
-                .id(1)
-                .user(user)
-                .title("title")
-                .body("body")
-                .build();
 
         when(postRepository.findById(post.getId())).thenReturn(Optional.empty());
 
@@ -285,16 +185,7 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("삭제 실패 - 작성자!=유저")
-    @WithMockUser
     void post_delete_fail3() {
-
-        //유저
-        User user = User.builder()
-                .id(1)
-                .userName("userName")
-                .password("password")
-                .role(UserRole.USER)
-                .build();
 
         //작성자
         User postCreator = User.builder()
@@ -304,19 +195,12 @@ public class PostServiceTest {
                 .role(UserRole.USER)
                 .build();
 
-        Post post = Post.builder()
-                .id(1)
-                .user(postCreator)
-                .title("title")
-                .body("body")
-                .build();
-
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
-        when(userRepository.findByUserName(user.getUserName())).thenReturn(Optional.of(user));
+        when(userRepository.findByUserName(postCreator.getUserName())).thenReturn(Optional.of(postCreator));
 
         AppException exception = assertThrows(AppException.class,
                 ()-> {
-                    postService.deletePost(user.getUserName(), post.getId());
+                    postService.deletePost(postCreator.getUserName(), post.getId());
                 });
 
         Assertions.assertEquals("INVALID_PERMISSION", exception.getErrorCode().name());

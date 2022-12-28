@@ -54,11 +54,7 @@ public class UserService {
 
         User savedUser = userRepository.save(req.toEntity(encoder.encode(req.getPassword()), index));
 
-        return UserDto.builder()
-                .id(savedUser.getId())
-                .userName(savedUser.getUserName())
-                .role(savedUser.getRole())
-                .build();
+        return new UserDto().of(savedUser);
     }
 
     public String login(String userName, String password) {
@@ -103,11 +99,7 @@ public class UserService {
 
         User savedUser = userRepository.saveAndFlush(user);
 
-        return UserDto.builder()
-                .id(savedUser.getId())
-                .userName(savedUser.getUserName())
-                .role(savedUser.getRole())
-                .build();
+        return new UserDto().of(savedUser);
 
     }
 }

@@ -1,5 +1,6 @@
 package com.example.mutsa_sns.domain.dto;
 
+import com.example.mutsa_sns.domain.User;
 import com.example.mutsa_sns.domain.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,5 +18,12 @@ public class UserDto {
     private String password;
     private UserRole role;
 
+    public UserDto of(User user) {
+        return UserDto.builder()
+                .id(user.getId())
+                .userName(user.getUserName())
+                .role(user.getRole())
+                .build();
+    }
 
 }

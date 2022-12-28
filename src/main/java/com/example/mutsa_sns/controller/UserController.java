@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Collection;
 
@@ -32,7 +33,7 @@ public class UserController {
 
     //role 변경
     @GetMapping("/{userId}/role/change")
-    public Response<UserRoleChangeResponse> roleChange(@PathVariable Integer userId, Authentication authentication) {
+    public Response<UserRoleChangeResponse> roleChange(@PathVariable Integer userId, @ApiIgnore Authentication authentication) {
         String adminUserName = authentication.getName();
         UserDto userDto = userService.changeUserRole(userId, adminUserName);
         return Response.success(new UserRoleChangeResponse("ADMIN 부여 완료", userDto.getId()));

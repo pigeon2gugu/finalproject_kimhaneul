@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -18,7 +19,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public Response<PostResponse> createPost(@RequestBody PostCreateRequest req, Authentication authentication) {
+    public Response<PostResponse> createPost(@RequestBody PostCreateRequest req, @ApiIgnore Authentication authentication) {
         String userName = authentication.getName();
         PostDto postDto = postService.createPost(req, userName);
         return Response.success(new PostResponse("포스트 등록 완료", postDto.getId()));
@@ -40,7 +41,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    public Response<PostResponse> deletePost(@PathVariable Integer postId, Authentication authentication) {
+    public Response<PostResponse> deletePost(@PathVariable Integer postId, @ApiIgnore Authentication authentication) {
 
         postService.deletePost(authentication.getName(), postId);
         return Response.success(new PostResponse("포스트 삭제 완료", postId));
@@ -48,7 +49,7 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public Response<PostResponse> modifyPost(@PathVariable Integer postId, @RequestBody PostModifyRequest req, Authentication authentication) {
+    public Response<PostResponse> modifyPost(@PathVariable Integer postId, @RequestBody PostModifyRequest req, @ApiIgnore Authentication authentication) {
 
         PostDto postDto = postService.modifyPost(postId, req.getTitle(), req.getBody(), authentication.getName());
         return Response.success(new PostResponse("포스트 수정 완료", postId));
