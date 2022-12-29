@@ -33,11 +33,11 @@ http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/users/2/role/change  
 + **Post**
     - **게시글 조회 (전체)**  
+        Get /api/v1/posts  
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts?page=0    
+    - **게시글 조회 (단건)**  
         Get /api/v1/posts/{postId}  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1  
-    - **게시글 조회 (단건)**  
-        Get /api/v1/posts  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts  
     - **게시글 작성**  
         Post /api/v1/posts  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts  
@@ -45,7 +45,7 @@ http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
         Put /api/v1/posts/{postId}  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1  
     - **게시글 삭제**  
-        Delete /api/v1/posts  
+        Delete /api/v1/posts/{postId}  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts  
 
 ## :closed_book: 체크리스트
