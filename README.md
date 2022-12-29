@@ -46,7 +46,7 @@ http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1  
     - **게시글 삭제**  
         Delete /api/v1/posts/{postId}  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts  
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1  
 
 ## :closed_book: 체크리스트
 + 인증/인가 필터 구현 (JWT token filter)
