@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class HelloService {
 
-    public String add(int num) {
+    public int add(int num) {
 
         int addNum = 0;
 
@@ -17,6 +17,6 @@ public class HelloService {
             num = num/10;
         }
 
-        return String.valueOf(addNum);
+        return addNum;
     }
 }

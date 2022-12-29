@@ -21,8 +21,8 @@ public class HelloController {
     }
 
     @GetMapping("/hello/{num}")
-    public String helloNum(int num) {
-        String addNum = helloService.add(num);
+    public int helloNum(int num) {
+        int addNum = helloService.add(num);
 
         return addNum;
     }
