@@ -369,7 +369,7 @@ class PostControllerTest {
                 .comment("modified comment")
                 .build();
 
-        CommentDto modifiedComment = CommentDto.builder()
+        CommentModifyResponse modifiedComment = CommentModifyResponse.builder()
                 .id(1)
                 .postId(1)
                 .comment(commentRequest.getComment())
