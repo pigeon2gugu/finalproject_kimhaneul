@@ -1,9 +1,17 @@
 package com.example.mutsa_sns.configuration;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.context.annotation.Bean;
+import com.fasterxml.classmate.TypeResolver;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.SecurityReference;
@@ -15,17 +23,31 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class SwaggerConfig {
+
+    private final TypeResolver typeResolver;
 
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.OAS_30)
+                //swagger pageable 설정
+                .alternateTypeRules(AlternateTypeRules
+                        .newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()))
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
                 .build();
+    }
+
+    @Getter
+    @Setter
+    @ApiModel
+    static class Page {
+        @ApiModelProperty(value = "페이지 번호")
+        private Integer page;
     }
 
     //Swagger authorization 추가

@@ -55,5 +55,36 @@ public class PostController {
         return Response.success(new PostResponse("포스트 수정 완료", postId));
     }
 
+    //댓글 기능
+    @PostMapping("/{postId}/comments")
+    public Response<CommentDto> createComment(@PathVariable Integer postId, @RequestBody CommentRequest req, @ApiIgnore Authentication authentication) {
 
+        CommentDto commentDto = postService.createComment(postId, authentication.getName(), req.getComment());
+        return Response.success(commentDto);
+
+    }
+
+    @GetMapping("/{postId}/comments")
+    public Response<Page<CommentDto>> getComment(@PathVariable Integer postId,
+                                                 @PageableDefault(size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<CommentDto> commentDtos = postService.getComment(postId, pageable);
+        return Response.success(commentDtos);
+
+    }
+
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public Response<CommentDeleteResponse> deleteComment(@PathVariable Integer postId, @PathVariable Integer commentId, @ApiIgnore Authentication authentication) {
+
+        postService.deleteComment(authentication.getName(), postId, commentId);
+        return Response.success(new CommentDeleteResponse("댓글 삭제 완료", commentId));
+    }
+
+    @PutMapping("/{postId}/comments/{commentId}")
+    public Response<CommentDto> modifyComment(@PathVariable Integer postId, @PathVariable Integer commentId, @RequestBody CommentRequest req, @ApiIgnore Authentication authentication) {
+
+        CommentDto commentDto = postService.modifyComment(authentication.getName(), postId, commentId, req.getComment());
+        return Response.success(commentDto);
+
+    }
 }
