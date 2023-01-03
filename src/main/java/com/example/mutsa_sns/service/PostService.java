@@ -4,10 +4,7 @@ import com.example.mutsa_sns.domain.Comment;
 import com.example.mutsa_sns.domain.Post;
 import com.example.mutsa_sns.domain.User;
 import com.example.mutsa_sns.domain.UserRole;
-import com.example.mutsa_sns.domain.dto.CommentDto;
-import com.example.mutsa_sns.domain.dto.CommentRequest;
-import com.example.mutsa_sns.domain.dto.PostCreateRequest;
-import com.example.mutsa_sns.domain.dto.PostDto;
+import com.example.mutsa_sns.domain.dto.*;
 import com.example.mutsa_sns.exception.AppException;
 import com.example.mutsa_sns.exception.ErrorCode;
 import com.example.mutsa_sns.repository.CommentRepository;
@@ -166,7 +163,7 @@ public class PostService {
 
     }
 
-    public CommentDto modifyComment(String userName, Integer postId, Integer commentId, String comment) {
+    public CommentModifyResponse modifyComment(String userName, Integer postId, Integer commentId, String comment) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
@@ -186,6 +183,6 @@ public class PostService {
         commentEntity.modify(comment);
         Comment savedComment = commentRepository.saveAndFlush(commentEntity);
 
-        return savedComment.toResponse();
+        return savedComment.toModifiedResponse();
     }
 }

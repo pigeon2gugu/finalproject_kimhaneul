@@ -1,6 +1,7 @@
 package com.example.mutsa_sns.domain;
 
 import com.example.mutsa_sns.domain.dto.CommentDto;
+import com.example.mutsa_sns.domain.dto.CommentModifyResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -46,6 +47,17 @@ public class Comment extends BaseEntity{
                 .userName(this.getUser().getUserName())
                 .postId(this.getPost().getId())
                 .createdAt(this.getCreatedAt())
+                .build();
+    }
+
+    public CommentModifyResponse toModifiedResponse() {
+        return CommentModifyResponse.builder()
+                .id(this.getId())
+                .comment(this.getComment())
+                .userName(this.getUser().getUserName())
+                .postId(this.getPost().getId())
+                .createdAt(this.getCreatedAt())
+                .lastModifiedAt(this.getLastModifiedAt())
                 .build();
     }
 

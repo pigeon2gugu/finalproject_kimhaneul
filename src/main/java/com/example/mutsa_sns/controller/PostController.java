@@ -81,10 +81,10 @@ public class PostController {
     }
 
     @PutMapping("/{postId}/comments/{commentId}")
-    public Response<CommentDto> modifyComment(@PathVariable Integer postId, @PathVariable Integer commentId, @RequestBody CommentRequest req, @ApiIgnore Authentication authentication) {
+    public Response<CommentModifyResponse> modifyComment(@PathVariable Integer postId, @PathVariable Integer commentId, @RequestBody CommentRequest req, @ApiIgnore Authentication authentication) {
 
-        CommentDto commentDto = postService.modifyComment(authentication.getName(), postId, commentId, req.getComment());
-        return Response.success(commentDto);
+        CommentModifyResponse commentModifyResponse = postService.modifyComment(authentication.getName(), postId, commentId, req.getComment());
+        return Response.success(commentModifyResponse);
 
     }
 }
