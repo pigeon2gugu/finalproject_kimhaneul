@@ -1,8 +1,6 @@
 package com.example.mutsa_sns.controller;
 
-import com.example.mutsa_sns.domain.dto.PostCreateRequest;
-import com.example.mutsa_sns.domain.dto.PostDto;
-import com.example.mutsa_sns.domain.dto.PostModifyRequest;
+import com.example.mutsa_sns.domain.dto.*;
 import com.example.mutsa_sns.exception.AppException;
 import com.example.mutsa_sns.exception.ErrorCode;
 import com.example.mutsa_sns.service.PostService;
@@ -287,6 +285,286 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.result.message").value(ErrorCode.DATABASE_ERROR.getMessage()))
                 .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.DATABASE_ERROR.name()))
                 .andDo(print());
+    }
+
+    //댓글 기능
+    @Test
+    @DisplayName("댓글 작성 성공")
+    @WithMockUser
+    void comment_create_success() throws Exception {
+
+        CommentRequest commentRequest = CommentRequest.builder()
+                .comment("comment")
+                .build();
+
+        CommentDto createdComment = CommentDto.builder()
+                .id(1)
+                .postId(1)
+                .comment(commentRequest.getComment())
+                .build();
+
+        when(postService.createComment(any(), any(), any())).thenReturn(createdComment);
+
+        mockMvc.perform(post("/api/v1/posts/1/comments")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(commentRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+                .andExpect(jsonPath("$.result.id").value(createdComment.getId()))
+                .andExpect(jsonPath("$.result.comment").value(createdComment.getComment()))
+                .andExpect(jsonPath("$.result.postId").value(createdComment.getPostId()))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("댓글 작성 실패 - 로그인 하지 않은 경우")
+    @WithAnonymousUser
+    void comment_create_fail1() throws Exception {
+
+        CommentRequest commentRequest = CommentRequest.builder()
+                .comment("comment")
+                .build();
+
+        mockMvc.perform(post("/api/v1/posts/1/comments")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(commentRequest)))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("댓글 작성 실패 - 게시물이 존재하지 않는 경우")
+    @WithMockUser
+    void comment_create_fail2() throws Exception {
+
+        CommentRequest commentRequest = CommentRequest.builder()
+                .comment("comment")
+                .build();
+
+        when(postService.createComment(any(), any(), any()))
+                .thenThrow(new AppException(ErrorCode.POST_NOT_FOUND, ""));
+
+        mockMvc.perform(post("/api/v1/posts/1/comments")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(commentRequest)))
+                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.POST_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.POST_NOT_FOUND.name()))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("댓글 수정 성공")
+    @WithMockUser
+    void comment_modify_success() throws Exception {
+
+        CommentRequest commentRequest = CommentRequest.builder()
+                .comment("modified comment")
+                .build();
+
+        CommentDto modifiedComment = CommentDto.builder()
+                .id(1)
+                .postId(1)
+                .comment(commentRequest.getComment())
+                .build();
+
+        when(postService.modifyComment(any(), any(), any(), any()))
+                .thenReturn(modifiedComment);
+
+        mockMvc.perform(put("/api/v1/posts/1/comments/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(commentRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+                .andExpect(jsonPath("$.result.id").value(modifiedComment.getId()))
+                .andExpect(jsonPath("$.result.comment").value(modifiedComment.getComment()))
+                .andExpect(jsonPath("$.result.postId").value(modifiedComment.getPostId()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("댓글 수정 실패 - 인증 실패")
+    @WithAnonymousUser
+    void comment_modify_fail1() throws Exception {
+
+        CommentRequest commentRequest = CommentRequest.builder()
+                .comment("modified comment")
+                .build();
+
+        mockMvc.perform(put("/api/v1/posts/1/comments/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(commentRequest)))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+
+
+    }
+
+    @Test
+    @DisplayName("댓글 수정 실패 - 댓글 불일치")
+    @WithMockUser
+    void comment_modify_fail2() throws Exception {
+
+        CommentRequest commentRequest = CommentRequest.builder()
+                .comment("modified comment")
+                .build();
+
+        when(postService.modifyComment(any(), any(), any(), any()))
+                .thenThrow(new AppException(ErrorCode.COMMENT_NOT_FOUND, ""));
+
+        mockMvc.perform(put("/api/v1/posts/1/comments/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(commentRequest)))
+                .andExpect(status().is(ErrorCode.COMMENT_NOT_FOUND.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.COMMENT_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.COMMENT_NOT_FOUND.name()))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("댓글 수정 실패 - 작성자 불일치")
+    @WithMockUser
+    void comment_modify_fail3() throws Exception {
+
+        CommentRequest commentRequest = CommentRequest.builder()
+                .comment("modified comment")
+                .build();
+
+        when(postService.modifyComment(any(), any(), any(), any()))
+                .thenThrow(new AppException(ErrorCode.INVALID_PERMISSION, ""));
+
+        mockMvc.perform(put("/api/v1/posts/1/comments/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(commentRequest)))
+                .andExpect(status().is(ErrorCode.INVALID_PERMISSION.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.INVALID_PERMISSION.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.INVALID_PERMISSION.name()))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("댓글 수정 실패 - 데이터베이스 에러")
+    @WithMockUser
+    void comment_modify_fail4() throws Exception {
+
+        CommentRequest commentRequest = CommentRequest.builder()
+                .comment("modified comment")
+                .build();
+
+        when(postService.modifyComment(any(), any(), any(), any()))
+                .thenThrow(new AppException(ErrorCode.DATABASE_ERROR, ""));
+
+        mockMvc.perform(put("/api/v1/posts/1/comments/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(commentRequest)))
+                .andExpect(status().is(ErrorCode.DATABASE_ERROR.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.DATABASE_ERROR.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.DATABASE_ERROR.name()))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 성공")
+    @WithMockUser
+    void comment_delete_success() throws Exception {
+
+        mockMvc.perform(delete("/api/v1/posts/1/comments/1")
+                        .with(csrf()))
+                .andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+                .andExpect(jsonPath("$.result.message").value("댓글 삭제 완료"))
+                .andExpect(jsonPath("$.result.id").value(1))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 인증 실패")
+    @WithAnonymousUser
+    void comment_delete_fail1() throws Exception {
+
+        mockMvc.perform(delete("/api/v1/posts/1/comments/1")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 댓글 불일치")
+    @WithMockUser
+    void comment_delete_fail2() throws Exception {
+
+        doThrow(new AppException(ErrorCode.COMMENT_NOT_FOUND, "")).when(postService).deleteComment(any(),any(),any());
+
+        mockMvc.perform(delete("/api/v1/posts/1/comments/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(ErrorCode.COMMENT_NOT_FOUND.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.COMMENT_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.COMMENT_NOT_FOUND.name()))
+                .andDo(print());
+
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 작성자 불일치")
+    @WithMockUser
+    void comment_delete_fail3() throws Exception {
+
+        doThrow(new AppException(ErrorCode.INVALID_PERMISSION, "")).when(postService).deleteComment(any(),any(),any());
+
+        mockMvc.perform(delete("/api/v1/posts/1/comments/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(ErrorCode.INVALID_PERMISSION.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.INVALID_PERMISSION.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.INVALID_PERMISSION.name()))
+                .andDo(print());
+
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 -  데이터베이스 에러")
+    @WithMockUser
+    void comment_delete_fail4() throws Exception {
+
+        doThrow(new AppException(ErrorCode.DATABASE_ERROR, "")).when(postService).deleteComment(any(),any(),any());
+
+        mockMvc.perform(delete("/api/v1/posts/1/comments/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(ErrorCode.DATABASE_ERROR.getStatus().value()))
+                .andExpect(jsonPath("$.resultCode").value("ERROR"))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.DATABASE_ERROR.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.DATABASE_ERROR.name()))
+                .andDo(print());
+
+
     }
 
 }
