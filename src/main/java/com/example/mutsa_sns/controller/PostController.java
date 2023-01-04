@@ -87,4 +87,17 @@ public class PostController {
         return Response.success(commentModifyResponse);
 
     }
+
+    //좋아요
+    @PostMapping("/{postId}/likes")
+    public Response<String> doLike(@PathVariable Integer postId, @ApiIgnore Authentication authentication) {
+        String result = postService.doLike(postId, authentication.getName());
+        return Response.success(result);
+    }
+
+    @GetMapping("/{postId}/likes")
+    public Response<Integer> getLike(@PathVariable Integer postId) {
+        Integer result = postService.getLike(postId);
+        return Response.success(result);
+    }
 }

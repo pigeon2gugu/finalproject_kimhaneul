@@ -1,13 +1,11 @@
 package com.example.mutsa_sns.service;
 
-import com.example.mutsa_sns.domain.Comment;
-import com.example.mutsa_sns.domain.Post;
-import com.example.mutsa_sns.domain.User;
-import com.example.mutsa_sns.domain.UserRole;
+import com.example.mutsa_sns.domain.*;
 import com.example.mutsa_sns.domain.dto.*;
 import com.example.mutsa_sns.exception.AppException;
 import com.example.mutsa_sns.exception.ErrorCode;
 import com.example.mutsa_sns.repository.CommentRepository;
+import com.example.mutsa_sns.repository.LikeRepository;
 import com.example.mutsa_sns.repository.PostRepository;
 import com.example.mutsa_sns.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static javax.persistence.FetchType.LAZY;
@@ -32,6 +32,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
 
     public PostDto createPost(PostCreateRequest req, String userName) {
 
@@ -184,5 +185,43 @@ public class PostService {
         Comment savedComment = commentRepository.saveAndFlush(commentEntity);
 
         return savedComment.toModifiedResponse();
+    }
+
+    public String doLike(Integer postId, String userName) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+
+        Optional<Like> like = likeRepository.findByUserAndPost(user, post);
+
+        //좋아요가 이미 존재하고, deletedAt이 null일때 (삭제되지 않은 상태)
+        if (like.isPresent() && like.get().getDeletedAt() == null) {
+            likeRepository.delete(like.get());
+            return "좋아요를 취소했습니다.";
+        }
+
+        //좋아요가 있지만, deletedAt이 null이 아닐 때 (삭제된 상태. 즉 취소된 상태)
+        if (like.isPresent() && like.get().getDeletedAt() != null) {
+            like.get().recoverLike(like.get()); //좋아요 복구 method
+            likeRepository.saveAndFlush(like.get());
+            return "좋아요를 눌렀습니다.";
+        }
+
+        //좋아요가 아예 없을 때 새로 생성
+        likeRepository.save(Like.toEntity(user, post));
+        return "좋아요를 눌렀습니다.";
+
+    }
+
+    public Integer getLike(Integer postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
+
+        return likeRepository.countByPost(post);
+
     }
 }
