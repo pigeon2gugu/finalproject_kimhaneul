@@ -410,7 +410,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("댓글 수정 실패 - 댓글 불일치")
+    @DisplayName("댓글 수정 실패 - Post없는 경우")
     @WithMockUser
     void comment_modify_fail2() throws Exception {
 
@@ -419,16 +419,16 @@ class PostControllerTest {
                 .build();
 
         when(postService.modifyComment(any(), any(), any(), any()))
-                .thenThrow(new AppException(ErrorCode.COMMENT_NOT_FOUND, ""));
+                .thenThrow(new AppException(ErrorCode.POST_NOT_FOUND, ""));
 
         mockMvc.perform(put("/api/v1/posts/1/comments/1")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(commentRequest)))
-                .andExpect(status().is(ErrorCode.COMMENT_NOT_FOUND.getStatus().value()))
+                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()))
                 .andExpect(jsonPath("$.resultCode").value("ERROR"))
-                .andExpect(jsonPath("$.result.message").value(ErrorCode.COMMENT_NOT_FOUND.getMessage()))
-                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.COMMENT_NOT_FOUND.name()))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.POST_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.POST_NOT_FOUND.name()))
                 .andDo(print());
 
     }
@@ -511,19 +511,19 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("댓글 삭제 실패 - 댓글 불일치")
+    @DisplayName("댓글 삭제 실패 - Post없는 경우")
     @WithMockUser
     void comment_delete_fail2() throws Exception {
 
-        doThrow(new AppException(ErrorCode.COMMENT_NOT_FOUND, "")).when(postService).deleteComment(any(),any(),any());
+        doThrow(new AppException(ErrorCode.POST_NOT_FOUND, "")).when(postService).deleteComment(any(),any(),any());
 
         mockMvc.perform(delete("/api/v1/posts/1/comments/1")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(ErrorCode.COMMENT_NOT_FOUND.getStatus().value()))
+                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()))
                 .andExpect(jsonPath("$.resultCode").value("ERROR"))
-                .andExpect(jsonPath("$.result.message").value(ErrorCode.COMMENT_NOT_FOUND.getMessage()))
-                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.COMMENT_NOT_FOUND.name()))
+                .andExpect(jsonPath("$.result.message").value(ErrorCode.POST_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.result.errorCode").value(ErrorCode.POST_NOT_FOUND.name()))
                 .andDo(print());
 
 
