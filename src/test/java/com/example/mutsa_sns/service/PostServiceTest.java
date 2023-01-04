@@ -7,6 +7,7 @@ import com.example.mutsa_sns.domain.dto.PostCreateRequest;
 import com.example.mutsa_sns.domain.dto.PostDto;
 import com.example.mutsa_sns.exception.AppException;
 import com.example.mutsa_sns.repository.CommentRepository;
+import com.example.mutsa_sns.repository.LikeRepository;
 import com.example.mutsa_sns.repository.PostRepository;
 import com.example.mutsa_sns.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -28,13 +29,14 @@ public class PostServiceTest {
     PostRepository postRepository = mock(PostRepository.class);
     UserRepository userRepository = Mockito.mock(UserRepository.class);
     CommentRepository commentRepository = Mockito.mock(CommentRepository.class);
+    LikeRepository likeRepository = Mockito.mock(LikeRepository.class);
 
     User user;
     Post post;
 
     @BeforeEach
     void setUp() {
-        postService = new PostService(postRepository, userRepository, commentRepository);
+        postService = new PostService(postRepository, userRepository, commentRepository, likeRepository);
 
         user = User.builder()
                 .id(1)
