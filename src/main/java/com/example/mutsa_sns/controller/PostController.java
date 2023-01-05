@@ -102,4 +102,11 @@ public class PostController {
         return Response.success(result);
     }
 
+    //마이 피드
+    @GetMapping("/my")
+    public Response<Page<PostDto>> getMyFeed(@PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                             @ApiIgnore Authentication authentication) {
+        Page<PostDto> postDtos = postService.getMyFeed(pageable, authentication.getName());
+        return Response.success(postDtos);
+    }
 }
