@@ -12,16 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Like, Integer> {
 
     Optional<Like> findByUserAndPost(User user, Post post);
 
-    @Transactional
-    @Query("update Like l set l.deletedAt = current_timestamp where l.deletedAt is null and l.post = :post")
+    Optional<List<Like>> findByPost(Post post);
+
+    /*@Query("update Like l set l.deletedAt = current_timestamp where l.deletedAt is null and l.post = :post")
     @Modifying(clearAutomatically = true)
-    void deleteAllByPost(@Param("post") Post post);
+    void deleteAllByPost(@Param("post") Post post);*/
 
     //Like 별칭을 like로 하면 error가 발생한다...
     @Query("SELECT COUNT(l) FROM Like l WHERE l.deletedAt is null and l.post = :post")
