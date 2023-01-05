@@ -74,7 +74,7 @@ public class PostService {
     }
 
     @Transactional
-    public boolean deletePost(String userName, Integer postId) {
+    public void deletePost(String userName, Integer postId) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
@@ -100,8 +100,6 @@ public class PostService {
 
         commentRepository.deleteAllByPost(post);
         postRepository.delete(post);
-
-        return true;
 
     }
 
