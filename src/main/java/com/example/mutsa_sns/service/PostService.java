@@ -249,5 +249,17 @@ public class PostService {
 
     }
 
+    public Page<PostDto> getMyFeed(Pageable pageable, String userName) {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
+
+        Page<Post> postPages = postRepository.findAllByUser(user, pageable);
+
+        return new PageImpl<>(postPages.stream()
+                .map(Post::toResponse)
+                .collect(Collectors.toList()));
+
+    }
 
 }
