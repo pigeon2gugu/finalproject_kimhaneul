@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,7 +70,8 @@ public class PostService {
 
     }
 
-    public void deletePost(String userName, Integer postId) {
+    public boolean deletePost(String userName, Integer postId) {
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
 
@@ -83,7 +85,11 @@ public class PostService {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "");
         }
 
+        likeRepository.deleteAllByPost(post);
+        commentRepository.deleteAllByPost(post);
         postRepository.delete(post);
+
+        return true;
 
     }
 
@@ -221,7 +227,8 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
 
-        return likeRepository.countByPost(post);
+        Integer counts = likeRepository.countByPost(post);
+        return counts;
 
     }
 }
