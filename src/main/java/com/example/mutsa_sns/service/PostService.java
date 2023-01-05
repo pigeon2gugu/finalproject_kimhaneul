@@ -15,10 +15,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,6 +37,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
 
+    @Transactional
     public PostDto createPost(PostCreateRequest req, String userName) {
 
         log.info("userName:{}", userName);
@@ -70,6 +73,7 @@ public class PostService {
 
     }
 
+    @Transactional
     public boolean deletePost(String userName, Integer postId) {
 
         Post post = postRepository.findById(postId)
@@ -85,7 +89,15 @@ public class PostService {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "");
         }
 
-        likeRepository.deleteAllByPost(post);
+        //좋아요 취소 시간이랑 포스트 삭제된 시간이랑 섞이고 싶지 않아 분리 (deleteAllByPost 사용 x)
+        Optional<List<Like>> likes = likeRepository.findByPost(post);
+
+        for (int i = 0; i < likes.get().size(); i++) {
+            if (likes.get().get(i).getDeletedAt() == null) {
+                likeRepository.delete(likes.get().get(i));
+            }
+        }
+
         commentRepository.deleteAllByPost(post);
         postRepository.delete(post);
 
@@ -93,6 +105,7 @@ public class PostService {
 
     }
 
+    @Transactional
     public PostDto modifyPost(Integer postId, String title, String body, String userName) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
@@ -116,6 +129,7 @@ public class PostService {
     }
 
     //댓글 기능
+    @Transactional
     public CommentDto createComment(Integer postId, String userName, String comment) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
@@ -149,6 +163,7 @@ public class PostService {
 
     }
 
+    @Transactional
     public void deleteComment(String userName, Integer postId, Integer commentId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND, ""));
@@ -170,6 +185,7 @@ public class PostService {
 
     }
 
+    @Transactional
     public CommentModifyResponse modifyComment(String userName, Integer postId, Integer commentId, String comment) {
 
         Post post = postRepository.findById(postId)
@@ -193,6 +209,7 @@ public class PostService {
         return savedComment.toModifiedResponse();
     }
 
+    @Transactional
     public String doLike(Integer postId, String userName) {
 
         Post post = postRepository.findById(postId)
@@ -231,4 +248,6 @@ public class PostService {
         return counts;
 
     }
+
+
 }

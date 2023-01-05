@@ -3,6 +3,7 @@ package com.example.mutsa_sns.controller;
 import com.example.mutsa_sns.domain.dto.*;
 import com.example.mutsa_sns.service.PostService;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.asm.Advice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -100,4 +101,5 @@ public class PostController {
         Integer result = postService.getLike(postId);
         return Response.success(result);
     }
+
 }
