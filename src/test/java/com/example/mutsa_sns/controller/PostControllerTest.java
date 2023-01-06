@@ -618,4 +618,36 @@ class PostControllerTest {
 
     }
 
+    @Test
+    @DisplayName("마이피드 조회 성공")
+    @WithMockUser
+    void myFeed_get_success() throws Exception {
+
+        when(postService.getMyFeed(any(), any()))
+                .thenReturn(Page.empty());
+
+
+        mockMvc.perform(get("/api/v1/posts/my")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+                .andDo(print());
+    }
+
+
+    @Test
+    @DisplayName("마이피드 조회 실패 - 로그인 하지 않은 경우")
+    @WithAnonymousUser
+    void myFeed_get_fail1() throws Exception {
+
+        mockMvc.perform(delete("/api/v1/posts/my")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+
+    }
+
+
 }
