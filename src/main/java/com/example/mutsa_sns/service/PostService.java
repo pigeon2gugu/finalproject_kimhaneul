@@ -4,10 +4,7 @@ import com.example.mutsa_sns.domain.*;
 import com.example.mutsa_sns.domain.dto.*;
 import com.example.mutsa_sns.exception.AppException;
 import com.example.mutsa_sns.exception.ErrorCode;
-import com.example.mutsa_sns.repository.CommentRepository;
-import com.example.mutsa_sns.repository.LikeRepository;
-import com.example.mutsa_sns.repository.PostRepository;
-import com.example.mutsa_sns.repository.UserRepository;
+import com.example.mutsa_sns.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,6 +33,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
+    private final AlarmRepository alarmRepository;
 
     @Transactional
     public PostDto createPost(PostCreateRequest req, String userName) {
@@ -143,6 +141,12 @@ public class PostService {
 
         commentRepository.save(commentEntity);
 
+        //자신의 글에 다른 사람이 comment 등록 시 alarm 생성 (자기 자신 x)
+        if (post.getUser().getId() != user.getId()) {
+            Alarm alarm = Alarm.toEntity(post, user, AlarmType.NEW_COMMENT_ON_POST);
+            alarmRepository.save(alarm);
+        }
+
         return commentEntity.toResponse();
 
     }
@@ -233,6 +237,13 @@ public class PostService {
 
         //좋아요가 아예 없을 때 새로 생성
         likeRepository.save(Like.toEntity(user, post));
+
+        //첫 좋아요 발생시에만 alarm 생성 + 다른 사람이 좋아요 처음 눌렀을 시 (자기 자신 x)
+        if (post.getUser().getId() != user.getId()) {
+            Alarm alarm = Alarm.toEntity(post, user, AlarmType.NEW_LIKE_ON_POST);
+            alarmRepository.save(alarm);
+        }
+
         return "좋아요를 눌렀습니다.";
 
     }
