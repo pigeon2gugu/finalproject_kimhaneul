@@ -48,6 +48,7 @@ public class SecurityConfig {
                 .cors().and()
                 .authorizeRequests()
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/alarms").authenticated() // alarm 인가자만 허용
                 .antMatchers(HttpMethod.POST,"/api/**").authenticated() // post는 인가자만 허용
                 .antMatchers(HttpMethod.DELETE,"/api/**").authenticated() // delete는 인가자만 허용
                 .antMatchers(HttpMethod.PUT,"/api/**").authenticated() // put는 인가자만 허용 (글 수정)
