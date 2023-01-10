@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,8 +35,7 @@ public class AlarmService {
 
         Page<Alarm> alarms = alarmRepository.findAllByUser(user, pageable);
 
-        return new PageImpl<>(alarms.stream()
-                .map(Alarm::toResponse)
-                .collect(Collectors.toList()));
+        return alarms.map(Alarm::toResponse);
+
     }
 }

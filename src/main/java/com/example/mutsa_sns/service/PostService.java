@@ -159,9 +159,8 @@ public class PostService {
 
         Page<Comment> commentPages = commentRepository.findAllByPost(post, pageable);
 
-        return new PageImpl<>(commentPages.stream()
-                .map(Comment::toResponse)
-                .collect(Collectors.toList()));
+        return commentPages.map(Comment::toResponse);
+
 
     }
 
@@ -265,9 +264,7 @@ public class PostService {
 
         Page<Post> postPages = postRepository.findAllByUser(user, pageable);
 
-        return new PageImpl<>(postPages.stream()
-                .map(Post::toResponse)
-                .collect(Collectors.toList()));
+        return postPages.map(Post::toResponse);
 
     }
 
