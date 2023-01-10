@@ -6,7 +6,7 @@
 **MutsaSNS** : Mutsa-SNS로, 회원가입, 로그인, 글쓰기, 댓글, 좋아요, 알림 기능을 갖고 있는 SNS  
 
 ## :milky_way: 개발 기간
-+ 2022-12-19 ~  
++ 2022-12-19 ~ 2022-01-11  
 
 ## :globe_with_meridians: 개발 환경
 + 에디터 : Intellij Ultimate
@@ -47,13 +47,42 @@ http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
     - **게시글 삭제**  
         Delete /api/v1/posts/{postId}  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1  
+    - **마이 피드**
+        Get /api/v1/posts/my  
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/my  
++ **Comment**
+    - **댓글 조회**  
+        Get /api/v1/posts/{postId}/comments  
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
+    - **댓글 작성**
+        Post /api/v1/posts/{postId}/comments  
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
+    - **댓글 수정**
+        Put /api/v1/posts/{postId}/comments 
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
+    - **댓글 삭제**
+        Delete /api/v1/posts/{postId}/comments  
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
++ **Like**
+    - **좋아오 누르기/취소**
+        Post /api/v1/posts/{postId}/likes  
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/likes  
+    - **좋아요 갯수 조회**
+        Get /api/v1/posts/{postId}/likes  
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/likes  
++ **Alarm**
+    - **알람 조회**
+        Get /api/v1/alarms  
+        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/alarms  
 
-## :closed_book: 체크리스트
-+ 인증/인가 필터 구현 (JWT token filter)
-+ Swagger 사용
-+ AWS EC2에 Docker 배포
-+ Gitlab CI & Crontab CD 을 통한 AWS 배포 자동화
-+ 주요 기능에 대한 Test Code 작성
+## :closed_book: 1주차 체크리스트
++ 인증/인가 필터 구현 (JWT token filter)  
++ Swagger 사용  
++ AWS EC2에 Docker 배포  
++ Gitlab CI & Crontab CD 을 통한 AWS 배포 자동화  
++ 회원가입/로그인 기능 구현  
++ 포스트 조회/작성/수정/삭제 기능 구현  
++ 주요 기능에 대한 Test Code 작성  
 
 ## :ledger: 1주차 미션 요약
 tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/%EB%A9%8B%EC%82%AC%20%EA%B0%9C%EC%9D%B8%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%28mutsa-SNS%29?page=2  
@@ -69,6 +98,28 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
 + deploy file 생성시, image에 대한 제거를 하지 않아 계속하여 쌓였다. image tag가 none인 image들을 image pull할 때 실행하게 하였다. 추후 수정이 필요 할 수 있다.
 + test code 역시 초반에 감을 잡는데 많은 시행착오가 발생하였다. controller와 service의 test의 차이점을 이해하고, 의존성에 대한 고민을 해보는 시간이었다.
 + 리펙토링 시, 불필요한 코드나 로직들을 정리하고 싶으며 변수명이나 method 명에 통일성을 주어야 될 듯 하다.
+
+## :closed_book: 2주차 체크리스트
++ 댓글 기능 구현  
++ 좋아요 기능 구현  
++ 마이 피드 기능 구현  
++ 알림 기능 구현  
++ Swagger ApiOperation 적용  
+
+## :ledger: 2주차 미션 요약
+tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/%EB%A9%8B%EC%82%AC%20%EA%B0%9C%EC%9D%B8%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%28mutsa-SNS%29?page=2  
+
+**[접근 방법]**
++ 댓글 (조회 제외), 좋아요, 마이 피드, 알림 기능은 로그인 한 유저만 가능하게 구현  
++ 글이 삭제 되면 해당 글에 달린 댓글/좋아요는 soft delete 처리  
++ 이미 좋아요 누른 글에 다시 요청을 보내면 좋아요 취소 (soft delete를 통해 변경)  
++ 첫 좋아요 발생 시에만 알람 발생 (좋아요 취소 후 다시 눌러도 알람 발생 x)  
++ 자신의 글에 자신이 좋아요/댓글 시 알람 발생 x  
++ Swagger ApiOperation 적용하여 각각의 endpoint 설명을 swagger에 추가  
+
+**[특이사항]**
++ @Transactional annotation 관련 error 발생 (https://celdan.tistory.com/26)  
++ 좋아요 soft delete 과정에서 JPQL query를 사용하려는 시도를 해보았다. 다만 JPA 사용이 좋을 듯 하여 되도록 JPA로 변환하여 사용하였다. (https://celdan.tistory.com/26)  
 
 ## :gem: 주요 기능
 + **User**
@@ -411,6 +462,458 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
             }
         }
         ```
+    - **마이 피드**  
+        로그인 유저만 가능  
+        해당 유저의 게시글을 pageable 형태로 return  
+        PostController.getMyFeed  
+        PostService.getMyFeed  
+        ```java
+        //성공 시
+        {
+            "resultCode": "SUCCESS",
+            "result": {
+                "Content" : [
+                {
+                    "id" : 1,
+                    "userName" : "admin",
+                    "title" : "alarm test" ,
+                    "body" : "string"
+                    "lastModifiedAt" : "2023-01-09 18:09:00",
+                    "createdAt" : "2023-01-09 18:09:00"
+                }
+            ],
+            "pageable": "INSTANCE",
+            "last": true,
+            "totalPages": 1,
+            "totalElements": 20,
+            "size": 20,
+            "number": 0,
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "first": true,
+            "numberOfElemets": 1,
+            "empty": false
+        }
+      
+        //실패 1 (토큰 error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "INVALID_TOKEN",
+                "message": "잘못된 토큰입니다."
+            }
+        }
+
+        //실패 2 (유저 존재 x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "NOT_FOUNDED_USER_NAME",
+                "message": "UserName is not founded"
+            }
+        }
+        
+        //실패 3 (sql DB error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "DATABASE_ERROR",
+                "message": "DB에러"
+            }
+        }
+        ```
++ **Comment**
+    - **댓글 작성**  
+        로그인 유저만 가능  
+        post 작성 유저와 다른 유저가 댓글 작성시 알람 발생  
+        PostController.createComment  
+        PostService.createComment  
+        ```java
+        //성공 시
+        {
+            "resultCode": "SUCCESS",
+            "result": {
+                "id": 1,
+                "comment": "string",
+                "userName": "admin",
+                "postId": 1,
+                "createdAt": "2023-01-10 05:43:50"
+            }
+        }
+      
+        //실패 1 (토큰 error)    
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "INVALID_TOKEN",
+                "message": "잘못된 토큰입니다."
+            }
+        }
+    
+        //실패 2 (유저 존재 x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "NOT_FOUNDED_USER_NAME",
+                "message": "UserName is not founded"
+            }
+        }
+      
+        //실패 3 (게시글 존재 x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "POST_NOT_FOUND",
+                "message": "해당 포스트가 없습니다."
+            }
+        }
+      
+        //실패 4 (sql DB error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "DATABASE_ERROR",
+                "message": "DB에러"
+            }
+        }
+        ```
+    - **댓글 수정**  
+        로그인 유저만 가능  
+        PostController.modifyComment  
+        PostService.modifyComment  
+        ```java
+        //성공 시
+        {
+            "resultCode": "SUCCESS",
+            "result": {
+                "id": 1,
+                "comment": "string",
+                "userName": "admin",
+                "postId": 1,
+                "createdAt": "2023-01-10 05:43:50"
+            }
+        }
+        //실패 1 (토큰 error)    
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "INVALID_TOKEN",
+                  "message": "잘못된 토큰입니다."
+            }
+        }
+    
+        //실패 2 (유저 존재 x)
+        {
+              "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "NOT_FOUNDED_USER_NAME",
+                "message": "UserName is not founded"
+            }
+        }
+      
+        //실패 3 (게시글 존재 x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "POST_NOT_FOUND",
+                "message": "해당 포스트가 없습니다."
+            }
+        }
+      
+        //실패 4 (본인 글 x, ADMIN x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "INVALID_PERMISSION",
+                "message": "사용자가 권한이 없습니다."
+            }
+        }
+      
+        //실패 5 (sql DB error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "DATABASE_ERROR",
+                  "message": "DB에러"
+            }
+        }
+        ```
+    - **댓글 삭제**
+        로그인 유저만 가능  
+        PostController.deleteComment  
+        PostService.deleteComment  
+        ```java
+        //성공 시
+        {
+            "resultCode": "SUCCESS",
+            "result": {
+                "message": "댓글 삭제 완료"
+                "id": 1
+            }
+        }
+        //실패 1 (토큰 error)    
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "INVALID_TOKEN",
+                  "message": "잘못된 토큰입니다."
+            }
+        }
+    
+        //실패 2 (유저 존재 x)
+        {
+              "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "NOT_FOUNDED_USER_NAME",
+                "message": "UserName is not founded"
+            }
+        }
+      
+        //실패 3 (게시글 존재 x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "POST_NOT_FOUND",
+                "message": "해당 포스트가 없습니다."
+            }
+        }
+      
+        //실패 4 (본인 글 x, ADMIN x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "INVALID_PERMISSION",
+                "message": "사용자가 권한이 없습니다."
+            }
+        }
+      
+        //실패 5 (sql DB error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "DATABASE_ERROR",
+                  "message": "DB에러"
+            }
+        }
+        ```
+    - **댓글 조회**
+        모든 유저 가능  
+        해당 post의 모든 댓글을 pageable 형태로 return  
+        PostController.getComment  
+        PostService.getComment  
+        ```java
+        //성공 시
+        {
+            "resultCode": "SUCCESS",
+            "result": {
+                content": [
+                {
+                    "id": 44,
+                    "comment": "string",
+                    "userName": "admin",
+                    "postId": 170,
+                    "createdAt": "2023-01-09 18:11:31"
+                }
+            ],
+                "pageable": "INSTANCE",
+                "last": true,
+                "totalPages": 1,
+                "totalElements": 4,
+                "size": 4,
+                "number": 0,
+                "sort": {
+                    "empty": true,
+                    "sorted": false,
+                    "unsorted": true
+                }
+            }
+        }
+      
+        //실패 1 (토큰 error)    
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "INVALID_TOKEN",
+                  "message": "잘못된 토큰입니다."
+            }
+        }
+        
+        //실패 2 (게시글 존재 x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "POST_NOT_FOUND",
+                "message": "해당 포스트가 없습니다."
+            }
+        }
+      
+        
+        //실패 3 (sql DB error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "DATABASE_ERROR",
+                  "message": "DB에러"
+            }
+        }
+        ```
++ **Like**
+    - **좋아요 누르기/취소**
+        로그인 유저만 가능  
+        좋아요 누른 상태에서 다시 Post하면 좋아요 취소  
+        post 작성 유저와 다른 유저가 좋아요 누를 시 알람 발생  
+        PostControllet.doLike  
+        PostService.doLike  
+        ```java
+        //성공 시
+        {
+            "resultCode": "SUCCESS",
+            "result": "좋아요를 눌렀습니다."
+        }
+      
+        //실패 1 (토큰 error)    
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "INVALID_TOKEN",
+                  "message": "잘못된 토큰입니다."
+            }
+        }
+    
+        //실패 2 (유저 존재 x)
+        {
+              "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "NOT_FOUNDED_USER_NAME",
+                "message": "UserName is not founded"
+            }
+        }
+      
+        //실패 3 (게시글 존재 x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "POST_NOT_FOUND",
+                "message": "해당 포스트가 없습니다."
+            }
+        }
+        
+        //실패 4 (sql DB error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "DATABASE_ERROR",
+                  "message": "DB에러"
+            }
+        }
+        ```
+    - **좋아요 갯수 조회**
+        모든 유저 가능    
+        해당 post의 좋아요 개수 표시  
+        PostController.getLike  
+        PostService.getLike  
+        ```java
+        //성공 시
+        {
+            "resultCode": "SUCCESS",
+            "result": 1
+        }
+        
+        //실패 1 (게시글 존재 x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "POST_NOT_FOUND",
+                "message": "해당 포스트가 없습니다."
+            }
+        }
+        
+        //실패 2 (sql DB error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                  "errorCode": "DATABASE_ERROR",
+                  "message": "DB에러"
+            }
+        }
+        ```
++ **Alarm**
+    - **알람 조회**
+        로그인 한 유저만 가능  
+        해당 유저에게 달린 모든 댓글과 좋아요를 pageable 형태로 return  
+        AlarmController.getAlarm  
+        AlarmService.getAlarm  
+        ```java
+        //성공 시
+        {
+            "resultCode": "SUCCESS",
+            "result": {
+                "Content" : [
+                {
+                    "id" : 1,
+                    "alarmType": "NEW_COMMENT_ON_POST"
+                    "fromUserId": 5,
+                    "targetId": 170,
+                    "text": "new comment!",
+                    "createdAt" : "2023-01-09 18:09:00"
+                }
+            ],
+            "pageable": "INSTANCE",
+            "last": true,
+            "totalPages": 1,
+            "totalElements": 1,
+            "size": 1,
+            "number": 0,
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "first": true,
+            "numberOfElemets": 1,
+            "empty": false
+        }
+      
+        //실패 1 (토큰 error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "INVALID_TOKEN",
+                "message": "잘못된 토큰입니다."
+            }
+        }
+
+        //실패 2 (유저 존재 x)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "NOT_FOUNDED_USER_NAME",
+                "message": "UserName is not founded"
+            }
+        }
+        
+        //실패 3 (sql DB error)
+        {
+            "resultCode": "ERROR",
+            "result":{
+                "errorCode": "DATABASE_ERROR",
+                "message": "DB에러"
+            }
+        }
+        ```
+        
+        
+        
+
+
+
+
+      
+  
+      
 
 
 
