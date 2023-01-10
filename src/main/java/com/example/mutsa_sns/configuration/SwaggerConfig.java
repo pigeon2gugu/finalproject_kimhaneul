@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import com.fasterxml.classmate.TypeResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Pageable;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.AlternateTypeRules;
@@ -31,6 +32,12 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.OAS_30)
+                //문서 설명
+                .apiInfo(new ApiInfoBuilder()
+                        .title("MutsaSNS Swagger")
+                        .description("로그인, 포스트, 댓글, 좋아요, 알림 기능")
+                        .version("1.0.0")
+                        .build())
                 //swagger pageable 설정
                 .alternateTypeRules(AlternateTypeRules
                         .newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class)))

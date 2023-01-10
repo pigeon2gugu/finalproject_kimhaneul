@@ -3,6 +3,7 @@ package com.example.mutsa_sns.controller;
 import com.example.mutsa_sns.domain.UserRole;
 import com.example.mutsa_sns.domain.dto.*;
 import com.example.mutsa_sns.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,12 +21,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/join")
+    @ApiOperation(value = "회원 가입")
     public Response<UserJoinResponse> join(@RequestBody UserJoinRequest req) {
         UserDto userDto = userService.join(req);
         return Response.success(new UserJoinResponse(userDto.getId(), userDto.getUserName()));
     }
 
     @PostMapping("/login")
+    @ApiOperation(value = "로그인")
     public Response<UserLoginResponse> login(@RequestBody UserLoginRequest req) {
         String token = userService.login(req.getUserName(), req.getPassword());
         return Response.success(new UserLoginResponse(token));
@@ -33,6 +36,7 @@ public class UserController {
 
     //role 변경
     @GetMapping("/{userId}/role/change")
+    @ApiOperation(value = "ADMIN 부여")
     public Response<UserRoleChangeResponse> roleChange(@PathVariable Integer userId, @ApiIgnore Authentication authentication) {
         String adminUserName = authentication.getName();
         UserDto userDto = userService.changeUserRole(userId, adminUserName);

@@ -3,6 +3,7 @@ package com.example.mutsa_sns.controller;
 import com.example.mutsa_sns.domain.dto.AlarmDto;
 import com.example.mutsa_sns.domain.dto.Response;
 import com.example.mutsa_sns.service.AlarmService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ public class AlarmController {
     private final AlarmService alarmService;
 
     @GetMapping
+    @ApiOperation(value = "유저 알람 목록 조회")
     public Response<Page<AlarmDto>> getAlarm(@PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                                              @ApiIgnore Authentication authentication) {
         Page<AlarmDto> alarmDtos = alarmService.getAlarm(pageable, authentication.getName());
