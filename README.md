@@ -810,7 +810,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
             }
         }
         ```
-    - **좋아요 갯수 조회**
+    - **좋아요 갯수 조회**  
         모든 유저 가능    
         해당 post의 좋아요 개수 표시  
         PostController.getLike  
