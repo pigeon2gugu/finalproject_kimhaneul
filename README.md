@@ -54,24 +54,24 @@ http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
     - **댓글 조회**  
         Get /api/v1/posts/{postId}/comments  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
-    - **댓글 작성**
+    - **댓글 작성**  
         Post /api/v1/posts/{postId}/comments  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
-    - **댓글 수정**
-        Put /api/v1/posts/{postId}/comments 
+    - **댓글 수정**  
+        Put /api/v1/posts/{postId}/comments  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
-    - **댓글 삭제**
+    - **댓글 삭제**  
         Delete /api/v1/posts/{postId}/comments  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
 + **Like**
-    - **좋아오 누르기/취소**
+    - **좋아오 누르기/취소**  
         Post /api/v1/posts/{postId}/likes  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/likes  
-    - **좋아요 갯수 조회**
+    - **좋아요 갯수 조회**  
         Get /api/v1/posts/{postId}/likes  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/likes  
 + **Alarm**
-    - **알람 조회**
+    - **알람 조회**  
         Get /api/v1/alarms  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/alarms  
 
@@ -641,7 +641,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
             }
         }
         ```
-    - **댓글 삭제**
+    - **댓글 삭제**  
         로그인 유저만 가능  
         PostController.deleteComment  
         PostService.deleteComment  
@@ -699,7 +699,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
             }
         }
         ```
-    - **댓글 조회**
+    - **댓글 조회**  
         모든 유저 가능  
         해당 post의 모든 댓글을 pageable 형태로 return  
         PostController.getComment  
@@ -761,7 +761,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         }
         ```
 + **Like**
-    - **좋아요 누르기/취소**
+    - **좋아요 누르기/취소**  
         로그인 유저만 가능  
         좋아요 누른 상태에서 다시 Post하면 좋아요 취소  
         post 작성 유저와 다른 유저가 좋아요 누를 시 알람 발생  
@@ -841,7 +841,7 @@ tistory : https://celdan.tistory.com/category/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%
         }
         ```
 + **Alarm**
-    - **알람 조회**
+    - **알람 조회**  
         로그인 한 유저만 가능  
         해당 유저에게 달린 모든 댓글과 좋아요를 pageable 형태로 return  
         AlarmController.getAlarm  
