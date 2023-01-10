@@ -6,10 +6,7 @@ import com.example.mutsa_sns.domain.UserRole;
 import com.example.mutsa_sns.domain.dto.PostCreateRequest;
 import com.example.mutsa_sns.domain.dto.PostDto;
 import com.example.mutsa_sns.exception.AppException;
-import com.example.mutsa_sns.repository.CommentRepository;
-import com.example.mutsa_sns.repository.LikeRepository;
-import com.example.mutsa_sns.repository.PostRepository;
-import com.example.mutsa_sns.repository.UserRepository;
+import com.example.mutsa_sns.repository.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,13 +27,14 @@ public class PostServiceTest {
     UserRepository userRepository = Mockito.mock(UserRepository.class);
     CommentRepository commentRepository = Mockito.mock(CommentRepository.class);
     LikeRepository likeRepository = Mockito.mock(LikeRepository.class);
+    AlarmRepository alarmRepository =Mockito.mock(AlarmRepository.class);
 
     User user;
     Post post;
 
     @BeforeEach
     void setUp() {
-        postService = new PostService(postRepository, userRepository, commentRepository, likeRepository);
+        postService = new PostService(postRepository, userRepository, commentRepository, likeRepository, alarmRepository);
 
         user = User.builder()
                 .id(1)
