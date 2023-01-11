@@ -5,6 +5,7 @@ import com.example.mutsa_sns.exception.AppException;
 import com.example.mutsa_sns.exception.ErrorCode;
 import com.example.mutsa_sns.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,6 +37,18 @@ class PostControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    CommentRequest commentRequest;
+
+    @BeforeEach
+    void setUp() {
+
+        commentRequest = CommentRequest.builder()
+                .comment("comment")
+                .build();
+
+    }
+
 
     //포스트 작성 Test
     @Test
@@ -293,10 +306,6 @@ class PostControllerTest {
     @WithMockUser
     void comment_create_success() throws Exception {
 
-        CommentRequest commentRequest = CommentRequest.builder()
-                .comment("comment")
-                .build();
-
         CommentDto createdComment = CommentDto.builder()
                 .id(1)
                 .postId(1)
@@ -323,10 +332,6 @@ class PostControllerTest {
     @WithAnonymousUser
     void comment_create_fail1() throws Exception {
 
-        CommentRequest commentRequest = CommentRequest.builder()
-                .comment("comment")
-                .build();
-
         mockMvc.perform(post("/api/v1/posts/1/comments")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -340,10 +345,6 @@ class PostControllerTest {
     @DisplayName("댓글 작성 실패 - 게시물이 존재하지 않는 경우")
     @WithMockUser
     void comment_create_fail2() throws Exception {
-
-        CommentRequest commentRequest = CommentRequest.builder()
-                .comment("comment")
-                .build();
 
         when(postService.createComment(any(), any(), any()))
                 .thenThrow(new AppException(ErrorCode.POST_NOT_FOUND, ""));
@@ -364,10 +365,6 @@ class PostControllerTest {
     @DisplayName("댓글 수정 성공")
     @WithMockUser
     void comment_modify_success() throws Exception {
-
-        CommentRequest commentRequest = CommentRequest.builder()
-                .comment("modified comment")
-                .build();
 
         CommentModifyResponse modifiedComment = CommentModifyResponse.builder()
                 .id(1)
@@ -395,10 +392,6 @@ class PostControllerTest {
     @WithAnonymousUser
     void comment_modify_fail1() throws Exception {
 
-        CommentRequest commentRequest = CommentRequest.builder()
-                .comment("modified comment")
-                .build();
-
         mockMvc.perform(put("/api/v1/posts/1/comments/1")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -413,10 +406,6 @@ class PostControllerTest {
     @DisplayName("댓글 수정 실패 - Post없는 경우")
     @WithMockUser
     void comment_modify_fail2() throws Exception {
-
-        CommentRequest commentRequest = CommentRequest.builder()
-                .comment("modified comment")
-                .build();
 
         when(postService.modifyComment(any(), any(), any(), any()))
                 .thenThrow(new AppException(ErrorCode.POST_NOT_FOUND, ""));
@@ -438,10 +427,6 @@ class PostControllerTest {
     @WithMockUser
     void comment_modify_fail3() throws Exception {
 
-        CommentRequest commentRequest = CommentRequest.builder()
-                .comment("modified comment")
-                .build();
-
         when(postService.modifyComment(any(), any(), any(), any()))
                 .thenThrow(new AppException(ErrorCode.INVALID_PERMISSION, ""));
 
@@ -461,10 +446,6 @@ class PostControllerTest {
     @DisplayName("댓글 수정 실패 - 데이터베이스 에러")
     @WithMockUser
     void comment_modify_fail4() throws Exception {
-
-        CommentRequest commentRequest = CommentRequest.builder()
-                .comment("modified comment")
-                .build();
 
         when(postService.modifyComment(any(), any(), any(), any()))
                 .thenThrow(new AppException(ErrorCode.DATABASE_ERROR, ""));

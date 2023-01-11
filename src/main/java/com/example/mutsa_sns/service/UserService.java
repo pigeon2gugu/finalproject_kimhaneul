@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.sql.Timestamp;
@@ -79,6 +80,7 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
     }
 
+    @Transactional
     public UserDto changeUserRole(Integer userId, String adminUserName) {
 
         //admin userName이 존재하는가
@@ -97,7 +99,7 @@ public class UserService {
         //admin 권한 부여
         user.setRole(UserRole.ADMIN);
 
-        User savedUser = userRepository.saveAndFlush(user);
+        User savedUser = userRepository.save(user);
 
         return new UserDto().of(savedUser);
 

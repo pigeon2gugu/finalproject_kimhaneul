@@ -61,6 +61,14 @@ public class Comment extends BaseEntity{
                 .build();
     }
 
+    public static Comment toEntity(String comment, User user, Post post) {
+        return Comment.builder()
+                .comment(comment)
+                .user(user)
+                .post(post)
+                .build();
+    }
+
     public void modify(String comment) {
         this.comment = comment;
     }

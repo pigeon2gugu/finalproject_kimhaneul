@@ -83,7 +83,7 @@ public class PostService {
 
         //userRole이 USER이고, 작성자와 삭제자 불일치시.
         //ADMIN은 모두 제거 가능
-        if (user.getRole() == UserRole.USER && !Objects.equals(post.getUser().getUserName(), userName)) {
+        if (user.getRole() == UserRole.USER && !post.getUser().getUserName().equals(userName)) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "");
         }
 
@@ -112,13 +112,13 @@ public class PostService {
 
         //userRole이 USER이고, 작성자와 삭제자 불일치시.
         //ADMIN은 모두 수정 가능.
-        if (user.getRole() == UserRole.USER && !Objects.equals(post.getUser().getUserName(), userName)) {
+        if (user.getRole() == UserRole.USER && !post.getUser().getUserName().equals(userName)) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "");
         }
 
         post.modify(title, body);
 
-        Post savedPost = postRepository.saveAndFlush(post);
+        Post savedPost = postRepository.save(post);
 
         return savedPost.toResponse();
 
@@ -133,11 +133,7 @@ public class PostService {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
 
-        Comment commentEntity = Comment.builder()
-                .comment(comment)
-                .user(user)
-                .post(post)
-                .build();
+        Comment commentEntity = Comment.toEntity(comment, user, post);
 
         commentRepository.save(commentEntity);
 
@@ -177,7 +173,7 @@ public class PostService {
 
         //userRole이 USER이고, 작성자와 삭제자 불일치시.
         //ADMIN은 모두 삭제 가능.
-        if (user.getRole() == UserRole.USER && !Objects.equals(post.getUser().getUserName(), userName)) {
+        if (user.getRole() == UserRole.USER && !post.getUser().getUserName().equals(userName)) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "");
         }
 
@@ -200,12 +196,12 @@ public class PostService {
 
         //userRole이 USER이고, 작성자와 삭제자 불일치시.
         //ADMIN은 모두 수정 가능.
-        if (user.getRole() == UserRole.USER && !Objects.equals(post.getUser().getUserName(), userName)) {
+        if (user.getRole() == UserRole.USER && !post.getUser().getUserName().equals(userName)) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "");
         }
 
         commentEntity.modify(comment);
-        Comment savedComment = commentRepository.saveAndFlush(commentEntity);
+        Comment savedComment = commentRepository.save(commentEntity);
 
         return savedComment.toModifiedResponse();
     }
@@ -219,19 +215,21 @@ public class PostService {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUNDED_USER_NAME, ""));
 
-        Optional<Like> like = likeRepository.findByUserAndPost(user, post);
+        Optional<Like> optLike = likeRepository.findByUserAndPost(user, post);
 
-        //좋아요가 이미 존재하고, deletedAt이 null일때 (삭제되지 않은 상태)
-        if (like.isPresent() && like.get().getDeletedAt() == null) {
-            likeRepository.delete(like.get());
-            return "좋아요를 취소했습니다.";
-        }
-
-        //좋아요가 있지만, deletedAt이 null이 아닐 때 (삭제된 상태. 즉 취소된 상태)
-        if (like.isPresent() && like.get().getDeletedAt() != null) {
-            like.get().recoverLike(like.get()); //좋아요 복구 method
-            likeRepository.saveAndFlush(like.get());
-            return "좋아요를 눌렀습니다.";
+        if(optLike.isPresent()) {
+            Like like = optLike.get();
+            //좋아요가 이미 존재하고, deletedAt이 null일때 (삭제되지 않은 상태)
+            if(like.getDeletedAt() == null) {
+                likeRepository.delete(like);
+                return "좋아요를 취소했습니다.";
+            }
+            //좋아요가 이미 존재하고, deletedAt이 null일때 (삭제되지 않은 상태)
+            else {
+                like.recoverLike(like); //좋아요 복구 method
+                likeRepository.save(like);
+                return "좋아요를 눌렀습니다.";
+            }
         }
 
         //좋아요가 아예 없을 때 새로 생성
