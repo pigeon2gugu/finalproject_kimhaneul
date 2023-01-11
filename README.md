@@ -26,54 +26,50 @@ http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui/
         Post /api/v1/users/join  
         ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/users/join  
     - **로그인**  
-        Post /api/v1/users/login  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/users/login  
+        Post /api/v1/users/login
     - **ADMIN 역할 부여**  
         Get /api/v1/users/{userId}/role/change  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/users/2/role/change  
+        ex) /api/v1/users/2/role/change  
 + **Post**
     - **게시글 조회 (전체)**  
         Get /api/v1/posts  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts?page=0    
+        ex) /api/v1/posts?page=0    
     - **게시글 조회 (단건)**  
         Get /api/v1/posts/{postId}  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1  
+        ex) /api/v1/posts/1  
     - **게시글 작성**  
         Post /api/v1/posts  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts  
     - **게시글 수정**  
         Put /api/v1/posts/{postId}  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1  
+        ex) /api/v1/posts/1  
     - **게시글 삭제**  
         Delete /api/v1/posts/{postId}  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1  
+        ex) /api/v1/posts/1  
     - **마이 피드**
-        Get /api/v1/posts/my  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/my  
+        Get /api/v1/posts/my
 + **Comment**
     - **댓글 조회**  
         Get /api/v1/posts/{postId}/comments  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
+        ex) /api/v1/posts/1/comments  
     - **댓글 작성**  
         Post /api/v1/posts/{postId}/comments  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
+        ex) /api/v1/posts/1/comments  
     - **댓글 수정**  
         Put /api/v1/posts/{postId}/comments  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
+        ex) /api/v1/posts/1/comments  
     - **댓글 삭제**  
         Delete /api/v1/posts/{postId}/comments  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/comments  
+        ex) /api/v1/posts/1/comments  
 + **Like**
-    - **좋아오 누르기/취소**  
+    - **좋아요 누르기/취소**  
         Post /api/v1/posts/{postId}/likes  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/likes  
+        ex) /api/v1/posts/1/likes  
     - **좋아요 갯수 조회**  
         Get /api/v1/posts/{postId}/likes  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/posts/1/likes  
+        ex) /api/v1/posts/1/likes  
 + **Alarm**
     - **알람 조회**  
         Get /api/v1/alarms  
-        ex) http://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:8080/api/v1/alarms  
 
 ## :closed_book: 1주차 체크리스트
 + 인증/인가 필터 구현 (JWT token filter)  
